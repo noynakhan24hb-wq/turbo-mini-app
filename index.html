@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>5Sim Virtual Number MiniApp</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f4f6f8);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #1e293b);
+            --hint-color: var(--tg-theme-hint-color, #64748b);
+            --primary-color: var(--tg-theme-button-color, #2563eb);
+            --primary-text: var(--tg-theme-button-text-color, #ffffff);
+            --border-color: rgba(148, 163, 184, 0.2);
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        /* Top Balance Header */
+        .wallet-header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+            margin-bottom: 16px;
+        }
+
+        .wallet-title {
+            font-size: 12px;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .wallet-balance {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .add-funds-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--hint-color);
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        /* Active Order Box */
+        .order-box {
+            display: none;
+            background: rgba(37, 99, 235, 0.05);
+            border: 1.5px dashed var(--primary-color);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .phone-display {
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .phone-number {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
+            margin: 4px 0;
+        }
+
+        /* OTP List */
+        .otp-section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0 8px 0;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .otp-badge {
+            background: var(--primary-color);
+            color: var(--primary-text);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .otp-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .otp-code {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--success-color);
+            letter-spacing: 2px;
+        }
+
+        .copy-btn {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        /* Service Cards List */
+        .service-list {
+            max-height: 380px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding-right: 2px;
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: var(--card-bg);
+            transition: transform 0.1s;
+        }
+
+        .service-item:active {
+            transform: scale(0.99);
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .price-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--success-color);
+            text-align: right;
+        }
+
+        .stock-text {
+            font-size: 11px;
+            color: var(--hint-color);
+        }
+
+        .buy-btn {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        /* Loader */
+        .spinner {
+            border: 3px solid rgba(0,0,0,0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-msg {
+            text-align: center;
+            color: var(--hint-color);
+            padding: 20px 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Wallet Area -->
+    <div class="wallet-header">
+        <div>
+            <div class="wallet-title">Account Balance</div>
+            <div class="wallet-balance" id="user-balance">$10.00</div>
+        </div>
+        <button class="add-funds-btn" onclick="alert('Deposit feature coming soon!')">+ Deposit</button>
+    </div>
+
+    <!-- Active Order Box -->
+    <div id="order-box" class="order-box">
+        <div class="phone-display">
+            <span style="font-size: 12px; color: var(--hint-color);">Active Phone Number</span>
+            <div class="phone-number" id="phone-number">+00000000000</div>
+            <span style="font-size: 11px; color: var(--hint-color);">Order ID: #<span id="order-id">0000</span></span>
+        </div>
+        
+        <div class="otp-section-title">
+            <span>Received OTP Messages</span>
+            <span class="otp-badge" id="otp-count">0</span>
+        </div>
+
+        <div id="otp-list-container">
+            <div class="status-msg" id="waiting-msg">⏳ Waiting for SMS... (Auto refreshing)</div>
+        </div>
+
+        <button class="cancel-btn" onclick="cancelCurrentOrder()">Cancel Order</button>
+    </div>
+
+    <!-- Main Selection Card -->
+    <div class="card">
+        <label for="country-dropdown">Select Country</label>
+        <select id="country-dropdown" onchange="fetchServicesForCountry()">
+            <option value="">Loading countries...</option>
+        </select>
+    </div>
+
+    <!-- Service List Card -->
+    <div class="card">
+        <label>Available Services</label>
+        <div id="service-list-container" class="service-list">
+            <p class="status-msg">Please select a country above</p>
+        </div>
+    </div>
+
+<script>
+    const BACKEND_URL = "http://127.0.0.1:8000/api";
+    let activeOrderId = null;
+    let pollInterval = null;
+    let tgChatId = null;
+
+    // Telegram MiniApp Theme & User Init
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            tgChatId = tg.initDataUnsafe.user.id;
+        }
+    }
+
+    // Emoji Flag helper
+    function getCountryFlag(countryCode) {
+        const flags = {
+            'usa': '🇺🇸', 'england': '🇬🇧', 'uk': '🇬🇧', 'bangladesh': '🇧🇩',
+            'india': '🇮🇳', 'canada': '🇨🇦', 'germany': '🇩🇪', 'russia': '🇷🇺'
+        };
+        return flags[countryCode.toLowerCase()] || '🌐';
+    }
+
+    // Service Icon helper
+    function getServiceIcon(serviceName) {
+        const name = serviceName.toLowerCase();
+        if (name.includes('telegram')) return '✈️';
+        if (name.includes('whatsapp')) return '💬';
+        if (name.includes('google') || name.includes('gmail')) return '🔍';
+        if (name.includes('facebook')) return '📘';
+        if (name.includes('tiktok')) return '🎵';
+        return '📱';
+    }
+
+    async function fetchCountries() {
+        const countrySelect = document.getElementById("country-dropdown");
+        try {
+            const response = await fetch(`${BACKEND_URL}/countries`);
+            const countriesData = await response.json();
+            countrySelect.innerHTML = '<option value="">-- Choose Country --</option>';
+
+            Object.keys(countriesData).sort().forEach(countryKey => {
+                const option = document.createElement("option");
+                option.value = countryKey;
+                const flag = getCountryFlag(countryKey);
+                option.textContent = `${flag} ${countryKey.toUpperCase()}`;
+                countrySelect.appendChild(option);
+            });
+        } catch (error) {
+            countrySelect.innerHTML = '<option value="">Failed to load countries</option>';
+        }
+    }
+
+    async function fetchServicesForCountry() {
+        const selectedCountry = document.getElementById("country-dropdown").value;
+        const container = document.getElementById("service-list-container");
+
+        if (!selectedCountry) {
+            container.innerHTML = '<p class="status-msg">Please select a country above</p>';
+            return;
+        }
+
+        container.innerHTML = '<div class="spinner"></div>';
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/prices/${selectedCountry}`);
+            const result = await response.json();
+
+            if (!result.services || result.services.length === 0) {
+                container.innerHTML = '<p class="status-msg">No services in stock for this country.</p>';
+                return;
+            }
+
+            container.innerHTML = "";
+            result.services.forEach(item => {
+                const serviceCard = document.createElement("div");
+                serviceCard.className = "service-item";
+                const icon = getServiceIcon(item.service);
+                
+                serviceCard.innerHTML = `
+                    <div class="service-info">
+                        <div class="service-icon">${icon}</div>
+                        <div>
+                            <strong style="font-size: 15px; display: block; text-transform: capitalize;">${item.service}</strong>
+                            <span class="stock-text">Operator: ${item.operator} | Stock: ${item.count}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="price-text">$${item.price_usd}</div>
+                        <button class="buy-btn" onclick="buyNumber('${selectedCountry}', '${item.operator}', '${item.service}')">Get</button>
+                    </div>
+                `;
+                container.appendChild(serviceCard);
+            });
+        } catch (error) {
+            container.innerHTML = '<p class="status-msg">Error loading services</p>';
+        }
+    }
+
+    async function buyNumber(country, operator, service) {
+        try {
+            let url = `${BACKEND_URL}/buy/${country}/${operator}/${service}`;
+            if (tgChatId) url += `?chat_id=${tgChatId}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (response.ok) {
+                activeOrderId = data.order_id;
+                document.getElementById("phone-number").innerText = "+" + data.phone;
+                document.getElementById("order-id").innerText = data.order_id;
+                
+                document.getElementById("otp-count").innerText = "0";
+                document.getElementById("otp-list-container").innerHTML = '<div class="status-msg">⏳ Waiting for SMS...</div>';
+                document.getElementById("order-box").style.display = "block";
+
+                startCheckingOTP(data.order_id);
+            } else {
+                alert(`Error: ${data.detail || "Could not buy number"}`);
+            }
+        } catch (error) {
+            alert("Connection to backend failed!");
+        }
+    }
+
+    function startCheckingOTP(orderId) {
+        if (pollInterval) clearInterval(pollInterval);
+
+        pollInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`${BACKEND_URL}/check-sms/${orderId}`);
+                const data = await res.json();
+
+                if (data.sms_list && data.sms_list.length > 0) {
+                    const container = document.getElementById("otp-list-container");
+                    document.getElementById("otp-count").innerText = data.count;
+                    container.innerHTML = "";
+
+                    data.sms_list.reverse().forEach((sms) => {
+                        const otpDiv = document.createElement("div");
+                        otpDiv.className = "otp-card";
+                        otpDiv.innerHTML = `
+                            <div>
+                                <div class="otp-code">${sms.code}</div>
+                                <div style="font-size: 11px; color: var(--hint-color); margin-top: 2px;">From: ${sms.sender || 'System'}</div>
+                            </div>
+                            <button class="copy-btn" onclick="copyCode('${sms.code}')">Copy</button>
+                        `;
+                        container.appendChild(otpDiv);
+                    });
+                }
+            } catch (e) {
+                console.error("OTP check error", e);
+            }
+        }, 5000);
+    }
+
+    function copyCode(code) {
+        navigator.clipboard.writeText(code);
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
+        alert(`Copied: ${code}`);
+    }
+
+    async function cancelCurrentOrder() {
+        if (!activeOrderId) return;
+        try {
+            await fetch(`${BACKEND_URL}/cancel/${activeOrderId}`);
+            alert("Order cancelled successfully!");
+            document.getElementById("order-box").style.display = "none";
+            if (pollInterval) clearInterval(pollInterval);
+        } catch (e) {
+            alert("Failed to cancel order");
+        }
+    }
+
+    window.onload = fetchCountries;
+</script>
+
+</body>
+</html>
