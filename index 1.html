@@ -332,7 +332,8 @@
     </div>
 
 <script>
-    const BACKEND_URL = "http://127.0.0.1:8000/api";
+    // Updated with your ngrok URL
+    const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev/api";
     let activeOrderId = null;
     let pollInterval = null;
     let tgChatId = null;
@@ -371,7 +372,9 @@
     async function fetchCountries() {
         const countrySelect = document.getElementById("country-dropdown");
         try {
-            const response = await fetch(`${BACKEND_URL}/countries`);
+            const response = await fetch(`${BACKEND_URL}/countries`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             const countriesData = await response.json();
             countrySelect.innerHTML = '<option value="">-- Choose Country --</option>';
 
@@ -399,7 +402,9 @@
         container.innerHTML = '<div class="spinner"></div>';
 
         try {
-            const response = await fetch(`${BACKEND_URL}/prices/${selectedCountry}`);
+            const response = await fetch(`${BACKEND_URL}/prices/${selectedCountry}`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             const result = await response.json();
 
             if (!result.services || result.services.length === 0) {
@@ -438,7 +443,9 @@
             let url = `${BACKEND_URL}/buy/${country}/${operator}/${service}`;
             if (tgChatId) url += `?chat_id=${tgChatId}`;
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             const data = await response.json();
 
             if (response.ok) {
@@ -464,7 +471,9 @@
 
         pollInterval = setInterval(async () => {
             try {
-                const res = await fetch(`${BACKEND_URL}/check-sms/${orderId}`);
+                const res = await fetch(`${BACKEND_URL}/check-sms/${orderId}`, {
+                    headers: { "ngrok-skip-browser-warning": "true" }
+                });
                 const data = await res.json();
 
                 if (data.sms_list && data.sms_list.length > 0) {
@@ -502,7 +511,9 @@
     async function cancelCurrentOrder() {
         if (!activeOrderId) return;
         try {
-            await fetch(`${BACKEND_URL}/cancel/${activeOrderId}`);
+            await fetch(`${BACKEND_URL}/cancel/${activeOrderId}`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             alert("Order cancelled successfully!");
             document.getElementById("order-box").style.display = "none";
             if (pollInterval) clearInterval(pollInterval);
