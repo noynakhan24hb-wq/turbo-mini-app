@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -45,6 +45,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid var(--card-border);
         }
 
         .app-title {
@@ -66,47 +67,10 @@
             border: 1px solid var(--primary-glow);
         }
 
-        /* Stepper (Pagination 1-6) */
-        .stepper-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin: 10px 16px 20px 16px;
-        }
-
-        .step-circle {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #1e293b;
-            color: var(--text-sub);
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .step-circle.active {
-            background: var(--primary-glow);
-            color: #fff;
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
-            border-color: #a5b4fc;
-        }
-
-        .step-circle.completed {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent-green);
-            border-color: var(--accent-green);
-        }
-
         /* Views / Pages Management */
         .page-view {
             display: none;
-            padding: 0 16px;
+            padding: 16px;
             animation: fadeIn 0.25s ease-in-out;
         }
 
@@ -141,10 +105,10 @@
             cursor: pointer;
         }
 
-        /* Stat Grid (Page 1) */
-        .stats-grid {
+        /* Stat Grid (3 Options: Today OTP, Total Cost, Total Repeat OTP) */
+        .stats-grid-3 {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             margin-bottom: 20px;
         }
@@ -153,7 +117,7 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 12px;
-            padding: 10px 4px;
+            padding: 12px 6px;
             text-align: center;
         }
 
@@ -163,7 +127,7 @@
             margin-top: 4px;
         }
 
-        /* Main Big Buttons */
+        /* Buttons */
         .btn-glow {
             width: 100%;
             background: var(--primary-gradient);
@@ -221,12 +185,35 @@
             cursor: pointer;
         }
 
-        .list-item.selected {
+        .list-item:active {
             border-color: var(--primary-glow);
             background: rgba(99, 102, 241, 0.1);
         }
 
-        /* Timer Circle (Page 6) */
+        /* Loader & Messages */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: var(--primary-glow);
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-msg {
+            text-align: center;
+            color: var(--text-sub);
+            padding: 20px 0;
+            font-size: 13px;
+        }
+
+        /* Timer Circle */
         .timer-container {
             text-align: center;
             margin: 30px 0;
@@ -245,7 +232,7 @@
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
         }
 
-        /* OTP Big Display (Page 7) */
+        /* OTP Big Display */
         .otp-display-box {
             background: var(--card-bg);
             border: 1px solid var(--primary-glow);
@@ -283,6 +270,7 @@
             font-size: 10px;
             text-align: center;
             cursor: pointer;
+            flex: 1;
         }
 
         .nav-item.active {
@@ -304,283 +292,440 @@
         <div class="user-avatar"></div>
     </div>
 
-    <!-- Stepper Header (Showed on steps 2 to 7) -->
-    <div class="stepper-container" id="stepper-bar" style="display: none;">
-        <div class="step-circle" id="st-1">1</div>
-        <div class="step-circle" id="st-2">2</div>
-        <div class="step-circle" id="st-3">3</div>
-        <div class="step-circle" id="st-4">4</div>
-        <div class="step-circle" id="st-5">5</div>
-        <div class="step-circle" id="st-6">6</div>
-    </div>
-
     <!-- ================= PAGE 1: DASHBOARD ================= -->
     <div id="page-1" class="page-view active-page">
         <div class="balance-card">
             <div>
                 <div style="font-size: 11px; color: var(--text-sub);">YOUR BALANCE</div>
-                <div style="font-size: 22px; font-weight: 800; margin-top: 2px;">$ 12.45</div>
-                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">User ID: 123456789</div>
+                <div style="font-size: 22px; font-weight: 800; margin-top: 2px;" id="user-balance">Loading...</div>
+                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;" id="user-id-display">User ID: --</div>
             </div>
-            <button class="topup-btn" onclick="alert('Top Up feature coming soon')">+ Top Up</button>
+            <button class="topup-btn" onclick="openWallet()">+ Top Up</button>
         </div>
 
-        <div class="stats-grid">
+        <!-- 3 Stat Cards -->
+        <div class="stats-grid-3">
             <div class="stat-box">
-                <span style="font-size: 14px;">🛒</span>
-                <div class="stat-value">125</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Total Orders</div>
+                <span style="font-size: 14px;">📩</span>
+                <div class="stat-value" id="today-otp-count">0</div>
+                <div style="font-size: 9px; color: var(--text-sub);">Today OTP</div>
             </div>
             <div class="stat-box">
-                <span style="font-size: 14px;">⏳</span>
-                <div class="stat-value" style="color: var(--accent-orange);">32</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Pending</div>
+                <span style="font-size: 14px;">💵</span>
+                <div class="stat-value" style="color: var(--accent-green);" id="today-cost-count">$ 0.00</div>
+                <div style="font-size: 9px; color: var(--text-sub);">Total Cost</div>
             </div>
             <div class="stat-box">
-                <span style="font-size: 14px;">✅</span>
-                <div class="stat-value" style="color: var(--accent-green);">89</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Received</div>
-            </div>
-            <div class="stat-box">
-                <span style="font-size: 14px;">🚫</span>
-                <div class="stat-value" style="color: var(--accent-red);">4</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Canceled</div>
+                <span style="font-size: 14px;">🔄</span>
+                <div class="stat-value" style="color: var(--accent-orange);" id="repeat-otp-count">0</div>
+                <div style="font-size: 9px; color: var(--text-sub);">Repeat OTP</div>
             </div>
         </div>
 
-        <button class="btn-glow" onclick="navigateToPage(2)">🚀 GET NUMBER</button>
+        <button class="btn-glow" onclick="startGetNumberFlow()">🚀 GET NUMBER</button>
 
         <div style="margin-top: 24px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                 <span style="font-weight: 700;">RECENT ORDERS</span>
-                <span style="color: var(--primary-glow); font-size: 12px; cursor: pointer;">View All</span>
+                <span style="color: var(--primary-glow); font-size: 12px; cursor: pointer;" onclick="openOrders()">View All</span>
             </div>
 
-            <div class="list-item">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <span>💬</span>
-                    <div>
-                        <div style="font-weight: 600;">WhatsApp</div>
-                        <div style="font-size: 11px; color: var(--text-sub);">🇺🇸 +1 234 567 8901</div>
-                    </div>
-                </div>
-                <span style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;">RECEIVED</span>
-            </div>
-
-            <div class="list-item">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <span>✈️</span>
-                    <div>
-                        <div style="font-weight: 600;">Telegram</div>
-                        <div style="font-size: 11px; color: var(--text-sub);">🇬🇧 +44 7700 900123</div>
-                    </div>
-                </div>
-                <span style="background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;">PENDING</span>
+            <div id="recent-orders-list">
+                <p class="status-msg">No active orders yet</p>
             </div>
         </div>
     </div>
 
-    <!-- ================= PAGE 2: SELECT COUNTRY / SERVICE ================= -->
+    <!-- ================= PAGE 2: SELECT COUNTRY ================= -->
     <div id="page-2" class="page-view">
-        <input type="text" class="search-bar" placeholder="Search country or service...">
-        <div style="font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 10px;">POPULAR COUNTRIES</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 16px;">Select Country</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-1')">Cancel</button>
+        </div>
+        <input type="text" id="country-search" class="search-bar" placeholder="Search country..." onkeyup="filterCountries()">
         
-        <div class="list-item selected" onclick="selectCountry('United States', '+1')">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <span>🇺🇸</span>
-                <div>
-                    <div style="font-weight: 600;">United States</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">+1</div>
-                </div>
-            </div>
-            <span style="font-size: 11px; color: var(--primary-glow);">152 Services</span>
+        <div id="country-list-container">
+            <div class="spinner"></div>
         </div>
-
-        <div class="list-item" onclick="selectCountry('United Kingdom', '+44')">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <span>🇬🇧</span>
-                <div>
-                    <div style="font-weight: 600;">United Kingdom</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">+44</div>
-                </div>
-            </div>
-            <span style="font-size: 11px; color: var(--primary-glow);">98 Services</span>
-        </div>
-
-        <button class="btn-glow" style="margin-top: 20px;" onclick="navigateToPage(3)">Next &gt;</button>
     </div>
 
-    <!-- ================= PAGE 3: SELECT OPERATOR ================= -->
+    <!-- ================= PAGE 3: SELECT SERVICE ================= -->
     <div id="page-3" class="page-view">
-        <div style="font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 10px;">SELECT OPERATOR</div>
-
-        <div class="list-item selected" onclick="selectOperator('AT&T', '$0.35')">
-            <div>
-                <div style="font-weight: 600;">AT&T</div>
-                <div style="font-size: 11px; color: var(--text-sub);">11260 numbers</div>
-            </div>
-            <span style="font-weight: 700; color: var(--accent-green);">$ 0.35</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 16px;">Select Service</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-2')">&lt; Back</button>
         </div>
-
-        <div class="list-item" onclick="selectOperator('T-Mobile', '$0.32')">
-            <div>
-                <div style="font-weight: 600;">T-Mobile</div>
-                <div style="font-size: 11px; color: var(--text-sub);">9850 numbers</div>
-            </div>
-            <span style="font-weight: 700; color: var(--accent-green);">$ 0.32</span>
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-secondary" onclick="navigateToPage(2)">&lt; Back</button>
-            <button class="btn-glow" onclick="navigateToPage(4)">Next &gt;</button>
+        <div id="selected-country-header" style="font-size: 12px; color: var(--primary-glow); margin-bottom: 10px; font-weight: 700;">Country: --</div>
+        
+        <div id="service-list-container">
+            <div class="spinner"></div>
         </div>
     </div>
 
-    <!-- ================= PAGE 4: GET NUMBER (CONFIRMATION) ================= -->
+    <!-- ================= PAGE 4: SELECT OPERATOR ================= -->
     <div id="page-4" class="page-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 16px;">Select Operator</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-3')">&lt; Back</button>
+        </div>
+        
+        <div id="operator-list-container">
+            <!-- Operators like virtual4, virtual54, virtual60 will load here -->
+        </div>
+    </div>
+
+    <!-- ================= PAGE 5: CONFIRM & BUY NUMBER ================= -->
+    <div id="page-5" class="page-view">
+        <h3 style="margin-bottom: 16px;">Order Summary</h3>
         <div style="background: var(--card-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--card-border); margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                 <span style="color: var(--text-sub);">Country</span>
-                <strong id="summary-country">United States (+1)</strong>
+                <strong id="summary-country">--</strong>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                 <span style="color: var(--text-sub);">Service</span>
-                <strong id="summary-service">WhatsApp</strong>
+                <strong id="summary-service">--</strong>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                 <span style="color: var(--text-sub);">Operator</span>
-                <strong id="summary-operator">AT&T</strong>
+                <strong id="summary-operator">--</strong>
             </div>
             <hr style="border-color: var(--card-border); margin: 12px 0;">
             <div style="display: flex; justify-content: space-between; font-size: 16px;">
-                <span>TOTAL AMOUNT</span>
-                <strong style="color: var(--accent-green);" id="summary-price">$ 0.35</strong>
+                <span>PRICE</span>
+                <strong style="color: var(--accent-green);" id="summary-price">$ 0.00</strong>
             </div>
         </div>
 
-        <button class="btn-glow btn-glow-green" onclick="buyNumberAction()">🚀 GET NUMBER</button>
-        <button class="btn-secondary" style="margin-top: 10px;" onclick="navigateToPage(3)">Back</button>
+        <button class="btn-glow btn-glow-green" onclick="confirmBuyNumber()">🚀 BUY NOW</button>
+        <button class="btn-secondary" style="margin-top: 10px;" onclick="navigateToPage('page-4')">Back</button>
     </div>
 
-    <!-- ================= PAGE 5: NUMBER READY ================= -->
-    <div id="page-5" class="page-view" style="text-align: center;">
-        <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-        <h2 style="margin-bottom: 16px;">NUMBER READY!</h2>
-
-        <div style="background: var(--card-bg); border: 1.5px dashed var(--accent-green); padding: 16px; border-radius: 16px; margin-bottom: 20px; font-size: 22px; font-weight: 800; color: var(--accent-green); display: flex; justify-content: space-between; align-items: center;">
-            <span id="ready-phone-number">+1 234 567 8901</span>
-            <button onclick="copyToClipboard('+12345678901')" style="background: rgba(16, 185, 129, 0.2); border: none; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; cursor: pointer;">Copy</button>
-        </div>
-
-        <button class="btn-glow btn-glow-green" onclick="navigateToPage(6)">Next (Wait for OTP) &gt;</button>
-    </div>
-
-    <!-- ================= PAGE 6: WAITING FOR OTP ================= -->
+    <!-- ================= PAGE 6: NUMBER READY & WAITING OTP ================= -->
     <div id="page-6" class="page-view" style="text-align: center;">
-        <h3>WAITING FOR OTP</h3>
-        <p style="color: var(--text-sub); font-size: 12px; margin-top: 4px;">Please check your app and enter the OTP</p>
+        <div style="font-size: 32px; margin-bottom: 6px;">✅</div>
+        <h2>NUMBER READY!</h2>
+
+        <div style="background: var(--card-bg); border: 1.5px dashed var(--accent-green); padding: 14px; border-radius: 16px; margin: 16px 0; font-size: 20px; font-weight: 800; color: var(--accent-green); display: flex; justify-content: space-between; align-items: center;">
+            <span id="ready-phone-number">+00000000000</span>
+            <button onclick="copyToClipboard(selectedPhone)" style="background: rgba(16, 185, 129, 0.2); border: none; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; cursor: pointer;">Copy</button>
+        </div>
 
         <div class="timer-container">
             <div class="timer-circle">
-                <span style="font-size: 22px; font-weight: 800;">02:45</span>
+                <span style="font-size: 20px; font-weight: 800;" id="timer-display">15:00</span>
                 <span style="font-size: 9px; color: var(--text-sub);">Time Left</span>
             </div>
         </div>
 
-        <button class="btn-glow" onclick="simulateOtpReceive()">Simulate Receive OTP</button>
-    </div>
-
-    <!-- ================= PAGE 7: OTP RECEIVED ================= -->
-    <div id="page-7" class="page-view" style="text-align: center;">
-        <div style="font-size: 40px;">🎉</div>
-        <h2 style="margin-top: 8px;">OTP RECEIVED!</h2>
-
-        <div class="otp-display-box">
-            <div class="otp-number" id="received-otp">482671</div>
-            <button class="btn-secondary" style="margin-top: 12px; padding: 6px 12px;" onclick="copyToClipboard('482671')">Copy Code</button>
+        <div id="otp-container">
+            <p class="status-msg">⏳ Waiting for SMS...</p>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-secondary" onclick="navigateToPage(1)">Back to Orders</button>
-            <button class="btn-glow" onclick="navigateToPage(1)">View Inbox</button>
+        <button class="btn-secondary" style="margin-top: 15px; color: var(--accent-red);" onclick="cancelCurrentOrder()">Cancel Order</button>
+    </div>
+
+    <!-- ================= INBOX / ORDERS / WALLET / PROFILE VIEWS ================= -->
+    <div id="page-inbox" class="page-view">
+        <h3 style="margin-bottom: 12px;">📥 Message Inbox</h3>
+        <p class="status-msg">No new messages in inbox</p>
+    </div>
+
+    <div id="page-wallet" class="page-view">
+        <h3 style="margin-bottom: 12px;">👛 Wallet & Deposit</h3>
+        <div class="balance-card">
+            <div>
+                <div style="font-size: 11px; color: var(--text-sub);">CURRENT BALANCE</div>
+                <div style="font-size: 22px; font-weight: 800;" id="wallet-balance-display">$ 0.00</div>
+            </div>
+        </div>
+        <button class="btn-glow" onclick="alert('bKash / Nagad payment integration coming soon!')">+ Add Funds</button>
+    </div>
+
+    <div id="page-profile" class="page-view">
+        <h3 style="margin-bottom: 12px;">👤 User Profile</h3>
+        <div class="list-item">
+            <div>
+                <div style="font-weight: 600;" id="profile-user-id">Telegram ID: --</div>
+                <div style="font-size: 11px; color: var(--text-sub);">Status: Active User</div>
+            </div>
         </div>
     </div>
 
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="navigateToPage(1)">
+        <div class="nav-item active" id="nav-dash" onclick="openNav('page-1', 'nav-dash')">
             <span class="nav-icon">📊</span>
             Dashboard
         </div>
-        <div class="nav-item" onclick="navigateToPage(2)">
+        <div class="nav-item" id="nav-orders" onclick="openNav('page-1', 'nav-orders')">
             <span class="nav-icon">📑</span>
             Orders
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="nav-inbox" onclick="openNav('page-inbox', 'nav-inbox')">
             <span class="nav-icon">📥</span>
             Inbox
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="nav-wallet" onclick="openNav('page-wallet', 'nav-wallet')">
             <span class="nav-icon">👛</span>
             Wallet
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="nav-profile" onclick="openNav('page-profile', 'nav-profile')">
             <span class="nav-icon">👤</span>
             Profile
         </div>
     </div>
 
 <script>
-    // Real Backend URL
     const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev/api";
-    let currentStep = 1;
+    
+    let selectedCountry = "";
+    let selectedService = "";
+    let selectedOperator = "";
+    let selectedPrice = "$0.00";
+    let selectedPhone = "";
+    let activeOrderId = null;
+    let tgChatId = null;
+    let countriesDataGlobal = {};
 
-    function navigateToPage(pageNumber) {
-        // Hide all pages
+    // Telegram Init
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            tgChatId = tg.initDataUnsafe.user.id;
+            document.getElementById('user-id-display').innerText = `User ID: ${tgChatId}`;
+            document.getElementById('profile-user-id').innerText = `Telegram ID: ${tgChatId}`;
+        }
+    }
+
+    // Navigation Helper
+    function navigateToPage(pageId) {
         document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-page'));
-        
-        // Show target page
-        document.getElementById(`page-${pageNumber}`).classList.add('active-page');
+        document.getElementById(pageId).classList.add('active-page');
+    }
 
-        // Manage Stepper display
-        const stepperBar = document.getElementById('stepper-bar');
-        if (pageNumber >= 2 && pageNumber <= 7) {
-            stepperBar.style.display = 'flex';
-            updateStepperUI(pageNumber - 1); // 2nd page corresponds to step 1
-        } else {
-            stepperBar.style.display = 'none';
+    function openNav(pageId, navItemId) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(navItemId).classList.add('active');
+        navigateToPage(pageId);
+    }
+
+    function openWallet() { openNav('page-wallet', 'nav-wallet'); }
+    function openOrders() { openNav('page-1', 'nav-orders'); }
+
+    // Fetch Balance
+    async function fetchUserBalance() {
+        try {
+            // Static mock balance fallback or endpoint fetch
+            document.getElementById('user-balance').innerText = "$ 10.00";
+            document.getElementById('wallet-balance-display').innerText = "$ 10.00";
+        } catch (e) {
+            document.getElementById('user-balance').innerText = "$ 0.00";
         }
     }
 
-    function updateStepperUI(activeStep) {
-        for (let i = 1; i <= 6; i++) {
-            const stepEl = document.getElementById(`st-${i}`);
-            stepEl.classList.remove('active', 'completed');
+    // Step 1: Click GET NUMBER -> Load All Countries
+    async function startGetNumberFlow() {
+        navigateToPage('page-2');
+        const container = document.getElementById('country-list-container');
+        container.innerHTML = '<div class="spinner"></div>';
 
-            if (i < activeStep) {
-                stepEl.classList.add('completed');
-            } else if (i === activeStep) {
-                stepEl.classList.add('active');
+        try {
+            const res = await fetch(`${BACKEND_URL}/countries`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
+            countriesDataGlobal = await res.json();
+            renderCountryList(countriesDataGlobal);
+        } catch (err) {
+            container.innerHTML = '<p class="status-msg">Failed to load countries</p>';
+        }
+    }
+
+    function renderCountryList(data) {
+        const container = document.getElementById('country-list-container');
+        container.innerHTML = "";
+
+        Object.keys(data).sort().forEach(cKey => {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.onclick = () => selectCountry(cKey);
+            item.innerHTML = `
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span style="font-size: 18px;">🌐</span>
+                    <strong style="text-transform: uppercase;">${cKey}</strong>
+                </div>
+                <span style="color: var(--primary-glow); font-size: 12px;">Select &gt;</span>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function filterCountries() {
+        const query = document.getElementById('country-search').value.toLowerCase();
+        const filtered = {};
+        Object.keys(countriesDataGlobal).forEach(key => {
+            if (key.toLowerCase().includes(query)) filtered[key] = countriesDataGlobal[key];
+        });
+        renderCountryList(filtered);
+    }
+
+    // Step 2: Select Country -> Load Services
+    async function selectCountry(country) {
+        selectedCountry = country;
+        document.getElementById('selected-country-header').innerText = `Selected Country: ${country.toUpperCase()}`;
+        navigateToPage('page-3');
+
+        const container = document.getElementById('service-list-container');
+        container.innerHTML = '<div class="spinner"></div>';
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/prices/${country}`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
+            const data = await res.json();
+
+            if (!data.services || data.services.length === 0) {
+                container.innerHTML = '<p class="status-msg">No services available</p>';
+                return;
             }
+
+            container.innerHTML = "";
+            data.services.forEach(item => {
+                const sCard = document.createElement('div');
+                sCard.className = 'list-item';
+                sCard.onclick = () => selectService(item.service, item.operator, item.price_usd);
+                sCard.innerHTML = `
+                    <div>
+                        <strong style="text-transform: capitalize;">${item.service}</strong>
+                        <div style="font-size: 11px; color: var(--text-sub);">Stock: ${item.count}</div>
+                    </div>
+                    <span style="color: var(--accent-green); font-weight: 700;">$${item.price_usd}</span>
+                `;
+                container.appendChild(sCard);
+            });
+        } catch (e) {
+            container.innerHTML = '<p class="status-msg">Error loading services</p>';
         }
     }
 
-    function selectCountry(countryName, code) {
-        document.getElementById('summary-country').innerText = `${countryName} (${code})`;
+    // Step 3: Select Service -> Load Virtual Operators (virtual4, virtual54, virtual60)
+    function selectService(serviceName, defaultOp, price) {
+        selectedService = serviceName;
+        navigateToPage('page-4');
+
+        const container = document.getElementById('operator-list-container');
+        container.innerHTML = "";
+
+        // Virtual operators list as requested
+        const virtualOperators = [
+            { name: defaultOp || 'virtual4', cost: price },
+            { name: 'virtual54', cost: price },
+            { name: 'virtual60', cost: price }
+        ];
+
+        virtualOperators.forEach(op => {
+            const oCard = document.createElement('div');
+            oCard.className = 'list-item';
+            oCard.onclick = () => selectOperator(op.name, op.cost);
+            oCard.innerHTML = `
+                <div>
+                    <strong>${op.name}</strong>
+                    <div style="font-size: 11px; color: var(--text-sub);">Virtual Line</div>
+                </div>
+                <span style="color: var(--accent-green); font-weight: 700;">$${op.cost}</span>
+            `;
+            container.appendChild(oCard);
+        });
     }
 
-    function selectOperator(operatorName, price) {
-        document.getElementById('summary-operator').innerText = operatorName;
-        document.getElementById('summary-price').innerText = price;
+    // Step 4: Select Operator -> Summary Page
+    function selectOperator(opName, price) {
+        selectedOperator = opName;
+        selectedPrice = `$${price}`;
+
+        document.getElementById('summary-country').innerText = selectedCountry.toUpperCase();
+        document.getElementById('summary-service').innerText = selectedService;
+        document.getElementById('summary-operator').innerText = selectedOperator;
+        document.getElementById('summary-price').innerText = selectedPrice;
+
+        navigateToPage('page-5');
     }
 
-    function buyNumberAction() {
-        // Transition to Number Ready page
-        navigateToPage(5);
+    // Step 5: Confirm Buy Number
+    async function confirmBuyNumber() {
+        try {
+            let url = `${BACKEND_URL}/buy/${selectedCountry}/${selectedOperator}/${selectedService}`;
+            if (tgChatId) url += `?chat_id=${tgChatId}`;
+
+            const res = await fetch(url, { headers: { "ngrok-skip-browser-warning": "true" } });
+            const data = await res.json();
+
+            if (res.ok) {
+                activeOrderId = data.order_id;
+                selectedPhone = "+" + data.phone;
+                document.getElementById('ready-phone-number').innerText = selectedPhone;
+                
+                navigateToPage('page-6');
+                startSmsPolling(data.order_id);
+            } else {
+                alert(`Error: ${data.detail || "Could not buy number"}`);
+            }
+        } catch (e) {
+            alert("Connection error to server");
+        }
     }
 
-    function simulateOtpReceive() {
-        navigateToPage(7);
+    // SMS Polling
+    function startSmsPolling(orderId) {
+        const otpContainer = document.getElementById('otp-container');
+        otpContainer.innerHTML = '<p class="status-msg">⏳ Waiting for SMS...</p>';
+
+        const interval = setInterval(async () => {
+            try {
+                const res = await fetch(`${BACKEND_URL}/check-sms/${orderId}`, {
+                    headers: { "ngrok-skip-browser-warning": "true" }
+                });
+                const data = await res.json();
+
+                if (data.sms_list && data.sms_list.length > 0) {
+                    otpContainer.innerHTML = "";
+                    data.sms_list.forEach(sms => {
+                        const box = document.createElement('div');
+                        box.className = 'otp-display-box';
+                        box.innerHTML = `
+                            <div class="otp-number">${sms.code}</div>
+                            <button class="btn-secondary" style="margin-top: 10px;" onclick="copyToClipboard('${sms.code}')">Copy Code</button>
+                        `;
+                        otpContainer.appendChild(box);
+                    });
+
+                    // Update Today Cost & OTP Stats
+                    let currentCost = parseFloat(document.getElementById('today-cost-count').innerText.replace('$', '')) || 0;
+                    let numPrice = parseFloat(selectedPrice.replace('$', '')) || 0;
+                    document.getElementById('today-cost-count').innerText = `$ ${(currentCost + numPrice).toFixed(2)}`;
+                    
+                    let todayOtp = parseInt(document.getElementById('today-otp-count').innerText) || 0;
+                    document.getElementById('today-otp-count').innerText = todayOtp + 1;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }, 5000);
+    }
+
+    async function cancelCurrentOrder() {
+        if (!activeOrderId) return;
+        try {
+            await fetch(`${BACKEND_URL}/cancel/${activeOrderId}`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
+            alert("Order cancelled!");
+            navigateToPage('page-1');
+        } catch (e) {
+            alert("Failed to cancel order");
+        }
     }
 
     function copyToClipboard(text) {
@@ -588,8 +733,10 @@
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
             window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         }
-        alert("Copied to clipboard!");
+        alert("Copied: " + text);
     }
+
+    window.onload = fetchUserBalance;
 </script>
 
 </body>
