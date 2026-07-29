@@ -177,6 +177,56 @@
     let currentOrderId = null;
     let pollingInterval = null;
 
+    // Service to Icon Mapping
+    const serviceIcons = {
+        'telegram': '✈️',
+        'whatsapp': '💬',
+        'steam': '🎮',
+        'google': '🔍',
+        'youtube': '▶️',
+        'facebook': '📘',
+        'instagram': '📷',
+        'twitter': '🐦',
+        'x': '🐦',
+        'tiktok': '🎵',
+        'discord': '👾',
+        'openai': '🤖',
+        'chatgpt': '🤖',
+        'netflix': '🎬',
+        'amazon': '🛒',
+        'apple': '🍏',
+        'microsoft': '🪟',
+        'uber': '🚗',
+        'tinder': '🔥',
+        'binance': '🟡',
+        'vk': '🔵',
+        'line': '🟢',
+        'viber': '💜',
+        'blizzard': '❄️',
+        'epicgames': '🕹️'
+    };
+
+    // Country Code to Flag Emoji Generator
+    function getCountryFlag(countryCode) {
+        if (!countryCode || countryCode.length !== 2) return '🌐';
+        const codePoints = countryCode
+            .toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt());
+        return String.fromCodePoint(...codePoints);
+    }
+
+    // Helper to get service icon
+    function getServiceIcon(serviceName) {
+        const name = serviceName.toLowerCase();
+        for (const key in serviceIcons) {
+            if (name.includes(key)) {
+                return serviceIcons[key];
+            }
+        }
+        return '📱'; // Default icon
+    }
+
     async function init() {
         fetchBalance();
         fetchCountries();
@@ -203,9 +253,10 @@
             
             sortedKeys.forEach(key => {
                 const name = countries[key].text || key;
+                const flag = countries[key].iso ? getCountryFlag(countries[key].iso) : '🌐';
                 const opt = document.createElement("option");
                 opt.value = key;
-                opt.innerText = name;
+                opt.innerText = `${flag}  ${name}`;
                 countrySelect.appendChild(opt);
             });
         } catch (e) {
@@ -239,9 +290,10 @@
 
             serviceSelect.innerHTML = '<option value="">-- Choose Service --</option>';
             servicesData.forEach(item => {
+                const icon = getServiceIcon(item.service);
                 const opt = document.createElement("option");
                 opt.value = item.service;
-                opt.innerText = `${item.service.toUpperCase()} ($${item.price_usd} - ${item.count} pcs)`;
+                opt.innerText = `${icon}  ${item.service.toUpperCase()} ($${item.price_usd} - ${item.count} pcs)`;
                 serviceSelect.appendChild(opt);
             });
 
@@ -264,12 +316,12 @@
         const serviceInfo = servicesData.find(s => s.service === selectedService);
         if (!serviceInfo) return;
 
-        operatorSelect.innerHTML = '<option value="any">ANY OPERATOR (Best Chance)</option>';
+        operatorSelect.innerHTML = '<option value="any">📶 ANY OPERATOR (Best Chance)</option>';
         serviceInfo.operators.forEach(op => {
             if (op.count > 0) {
                 const opt = document.createElement("option");
                 opt.value = op.operator;
-                opt.innerText = `${op.operator.toUpperCase()} ($${op.cost} - ${op.count} pcs)`;
+                opt.innerText = `📡  ${op.operator.toUpperCase()} ($${op.cost} - ${op.count} pcs)`;
                 operatorSelect.appendChild(opt);
             }
         });
@@ -338,7 +390,6 @@
         }
     }
 
-    // 🔴 1-Click Cancel (No Browser Dialog/Alert Popup)
     async function cancelNumber() {
         if (!currentOrderId) return;
 
@@ -356,16 +407,13 @@
         }
     }
 
-    // 🔄 1-Click Change Number (No Browser Dialog/Alert Popup)
     async function changeNumber() {
         if (!currentOrderId) return;
 
         try {
-            // Cancel current number first
             await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             if (pollingInterval) clearInterval(pollingInterval);
 
-            // Re-buy new number instantly
             await buyNumber();
         } catch (e) {
             console.error("Change failed", e);
