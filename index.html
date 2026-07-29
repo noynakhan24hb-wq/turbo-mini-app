@@ -1,573 +1,220 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>5SIM VIP Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5SIM Virtual Number Hub</title>
     <style>
-        :root {
-            --bg-dark: #080c14;
-            --card-bg: #111827;
-            --card-border: #1f2937;
-            --primary-glow: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-            --accent-green: #10b981;
-            --accent-orange: #f59e0b;
-            --accent-red: #ef4444;
-            --text-main: #f9fafb;
-            --text-sub: #9ca3af;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            user-select: none;
-        }
-
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding-bottom: 75px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; color: #007bff; margin-bottom: 20px; }
+        .card {
+            background: #eef5ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
             font-size: 14px;
         }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background: rgba(8, 12, 20, 0.85);
-            backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .app-title {
-            font-size: 18px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #38bdf8, #818cf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .page-view {
-            display: none;
-            padding: 16px;
-            animation: fadeIn 0.2s ease-in-out;
-        }
-
-        .page-view.active-page { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #1e1b4b, #0f172a);
-            border: 1px solid rgba(99, 102, 241, 0.35);
-            border-radius: 18px;
-            padding: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .topup-btn {
-            background: rgba(99, 102, 241, 0.2);
-            color: #a5b4fc;
-            border: 1px solid var(--primary-glow);
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .stats-grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-box {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px 8px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 16px;
-            font-weight: 800;
-            margin-top: 4px;
-        }
-
-        .btn-glow {
-            width: 100%;
-            background: var(--primary-gradient);
-            color: #fff;
+        button {
+            background-color: #007bff;
+            color: white;
             border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #0056b3; }
+        .order-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
             padding: 15px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            border-radius: 8px;
+            margin-top: 20px;
         }
-
-        .btn-glow-green {
-            background: linear-gradient(135deg, #059669, #10b981);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .search-bar {
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: #fff;
-            padding: 12px 16px;
-            border-radius: 14px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-
-        .list-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .list-item:active {
-            border-color: var(--primary-glow);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        .flag-img {
-            width: 24px;
-            height: 16px;
-            border-radius: 3px;
-            object-fit: cover;
-        }
-
-        .service-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            object-fit: contain;
-            background: #1f2937;
-            padding: 2px;
-        }
-
-        .qty-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .qty-card {
-            background: var(--card-bg);
-            border: 2px solid var(--card-border);
-            padding: 16px;
-            border-radius: 14px;
+        .sms-code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
             text-align: center;
-            cursor: pointer;
-            font-weight: 800;
+            letter-spacing: 2px;
+            margin-top: 10px;
         }
-
-        .qty-card.selected {
-            border-color: var(--primary-glow);
-            background: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-        }
-
-        /* Circular Clock */
-        .timer-wrapper {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 20px auto;
-        }
-
-        .timer-svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        .timer-circle-bg { fill: none; stroke: var(--card-border); stroke-width: 8; }
-        .timer-circle-progress {
-            fill: none;
-            stroke: var(--primary-glow);
-            stroke-width: 8;
-            stroke-linecap: round;
-            stroke-dasharray: 339.29;
-            stroke-dashoffset: 0;
-            transition: stroke-dashoffset 1s linear;
-        }
-
-        .timer-text-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.1);
-            width: 26px; height: 26px; border-radius: 50%;
-            border-left-color: var(--primary-glow);
-            animation: spin 0.8s linear infinite;
-            margin: 30px auto;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            height: 60px; background: #080c14;
-            border-top: 1px solid var(--card-border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 200;
-        }
-
-        .nav-item { color: var(--text-sub); font-size: 10px; text-align: center; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--primary-glow); font-weight: 700; }
-        .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+        .loader { text-align: center; font-style: italic; color: #666; }
     </style>
 </head>
 <body>
 
-    <div class="app-header">
-        <div class="app-title">⚡ 5SIM VIP MINI APP</div>
-        <div style="background: rgba(99,102,241,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; color: #a5b4fc; font-weight: 700;" id="user-id-display">👑 ID: --</div>
+<div class="container">
+    <h2>5SIM SMS Activator</h2>
+
+    <!-- 1. Balance Section -->
+    <div class="card">
+        <span><strong>Account Balance:</strong></span>
+        <span id="balance-display" style="font-size: 18px; font-weight: bold; color: #28a745;">Loading...</span>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="page-1" class="page-view active-page">
-        <div class="balance-card">
-            <div>
-                <div style="font-size: 11px; color: var(--text-sub);">💎 REAL 5SIM BALANCE</div>
-                <div style="font-size: 24px; font-weight: 900; margin-top: 2px; color: #fff;" id="user-balance">Loading...</div>
-            </div>
-            <button class="topup-btn" onclick="openWallet()">💳 Top Up</button>
-        </div>
-
-        <div class="stats-grid-3">
-            <div class="stat-box">
-                <span>📩</span>
-                <div class="stat-value" id="today-otp-count">0</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Today OTP</div>
-            </div>
-            <div class="stat-box">
-                <span>💵</span>
-                <div class="stat-value" style="color: var(--accent-green);" id="today-cost-count">$ 0.00</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Total Cost</div>
-            </div>
-            <div class="stat-box">
-                <span>🔄</span>
-                <div class="stat-value" style="color: var(--accent-orange);" id="repeat-otp-count">0</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Repeat OTP</div>
-            </div>
-        </div>
-
-        <button class="btn-glow" onclick="startGetNumberFlow()">🚀 GET NUMBER</button>
+    <!-- 2. Purchase Form -->
+    <div class="form-group">
+        <label for="country">Country:</label>
+        <input type="text" id="country" value="russia" placeholder="e.g. russia, england, usa">
     </div>
 
-    <!-- COUNTRY SELECT -->
-    <div id="page-2" class="page-view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3>🌐 Select Country</h3>
-            <button class="btn-secondary" style="width: auto;" onclick="navigateToPage('page-1')">✕ Close</button>
-        </div>
-        <input type="text" id="country-search" class="search-bar" placeholder="🔍 Search Country..." onkeyup="filterCountries()">
-        <div id="country-list-container"><div class="spinner"></div></div>
+    <div class="form-group">
+        <label for="operator">Operator:</label>
+        <input type="text" id="operator" value="any" placeholder="e.g. any, megafon, tele2">
     </div>
 
-    <!-- SERVICE SELECT -->
-    <div id="page-3" class="page-view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h3>📲 Select Service</h3>
-            <button class="btn-secondary" style="width: auto;" onclick="navigateToPage('page-2')">← Back</button>
-        </div>
-        <div id="selected-country-header" style="font-size: 12px; color: var(--primary-glow); margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px;"></div>
-        <input type="text" id="service-search" class="search-bar" placeholder="🔍 Search Service (WhatsApp, Telegram)..." onkeyup="filterServices()">
-        <div id="service-list-container"><div class="spinner"></div></div>
+    <div class="form-group">
+        <label for="service">Service:</label>
+        <input type="text" id="service" value="telegram" placeholder="e.g. telegram, whatsapp, steam">
     </div>
 
-    <!-- OPERATOR SELECT -->
-    <div id="page-4" class="page-view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3>📡 Select Operator</h3>
-            <button class="btn-secondary" style="width: auto;" onclick="navigateToPage('page-3')">← Back</button>
-        </div>
-        <div id="operator-list-container"></div>
+    <button onclick="buyNumber()">Buy Virtual Number</button>
+
+    <!-- 3. Active Order & SMS Panel -->
+    <div id="order-section" class="order-box" style="display: none;">
+        <h3>Active Number</h3>
+        <p><strong>Phone Number:</strong> <span id="phone-number">-</span></p>
+        <p><strong>Order ID:</strong> <span id="order-id">-</span></p>
+        <p><strong>Status:</strong> <span id="order-status">PENDING</span></p>
+
+        <hr>
+        <h4>Received SMS:</h4>
+        <div id="sms-container" class="loader">Waiting for SMS code...</div>
     </div>
-
-    <!-- QUANTITY & ORDER CONFIRM -->
-    <div id="page-5" class="page-view">
-        <h3 style="margin-bottom: 12px;">🛍️ Quantity & Order Summary</h3>
-        <div style="background: var(--card-bg); border-radius: 14px; padding: 14px; border: 1px solid var(--card-border);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Country:</span><strong id="sum-country">--</strong></div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Service:</span><strong id="sum-service">--</strong></div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Operator:</span><strong id="sum-operator">--</strong></div>
-            <div style="display: flex; justify-content: space-between;"><span>Unit Cost:</span><strong id="sum-unit-cost" style="color: var(--accent-green);">$ 0.00</strong></div>
-        </div>
-
-        <p style="margin-top: 16px; font-weight: 700;">Select Quantity:</p>
-        <div class="qty-grid">
-            <div class="qty-card selected" onclick="setQty(1, this)">1 Pcs</div>
-            <div class="qty-card" onclick="setQty(5, this)">5 Pcs</div>
-            <div class="qty-card" onclick="setQty(10, this)">10 Pcs</div>
-        </div>
-
-        <div style="background: rgba(16,185,129,0.1); border: 1px solid var(--accent-green); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <span>TOTAL PRICE:</span>
-            <strong style="font-size: 18px; color: var(--accent-green);" id="sum-total-price">$ 0.00</strong>
-        </div>
-
-        <button class="btn-glow btn-glow-green" onclick="confirmBuy()">✨ BUY NOW</button>
-    </div>
-
-    <!-- READY NUMBER PAGE -->
-    <div id="page-6" class="page-view" style="text-align: center;">
-        <h2>🎉 NUMBER READY!</h2>
-        <div id="active-numbers-list"></div>
-
-        <div class="timer-wrapper">
-            <svg class="timer-svg" viewBox="0 0 120 120">
-                <circle class="timer-circle-bg" cx="60" cy="60" r="54"></circle>
-                <circle class="timer-circle-progress" id="timer-progress" cx="60" cy="60" r="54"></circle>
-            </svg>
-            <div class="timer-text-container">
-                <span style="font-size: 20px; font-weight: 900;" id="timer-display">15:00</span>
-                <span style="font-size: 9px; color: var(--text-sub);">COUNTDOWN</span>
-            </div>
-        </div>
-
-        <div id="otp-container"><p style="color: var(--text-sub);">⏳ Waiting for SMS...</p></div>
-    </div>
-
-    <!-- BOTTOM NAV -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="navigateToPage('page-1')"><span class="nav-icon">📊</span>Dashboard</div>
-        <div class="nav-item" onclick="navigateToPage('page-2')"><span class="nav-icon">🌐</span>Countries</div>
-        <div class="nav-item" onclick="openWallet()"><span class="nav-icon">👛</span>Wallet</div>
-    </div>
+</div>
 
 <script>
-    const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev/api";
-    
-    let currentCountry = "", currentService = "", currentOp = "", unitPrice = 0, selectedQty = 1;
-    let selectedServiceObj = null;
-    let countriesData = {};
-    let servicesData = [];
+    // 🔗 আপনার Ngrok Backend URL এখানে আপডেট করুন
+    const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev";
 
-    // Country Flag Code Mapper
-    const isoCodes = { "russia": "ru", "usa": "us", "england": "gb", "kazakhstan": "kz", "china": "cn", "philippines": "ph", "india": "in", "indonesia": "id", "bangladesh": "bd" };
+    // Ngrok Warning Bypass এর জন্য সাধারণ Headers
+    const customHeaders = {
+        "ngrok-skip-browser-warning": "69420",
+        "Content-Type": "application/json"
+    };
 
-    function navigateToPage(id) {
-        document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(id).classList.add('active-page');
-    }
+    let pollingInterval = null;
 
-    function openWallet() { alert("Deposit System coming soon!"); }
-
-    // 1. Fetch REAL Balance from 5SIM
-    async function fetchRealBalance() {
+    // 1. Fetch & Display Balance
+    async function loadBalance() {
         try {
-            const res = await fetch(`${BACKEND_URL}/profile`, { headers: { "ngrok-skip-browser-warning": "true" } });
-            const data = await res.json();
-            document.getElementById('user-balance').innerText = `$ ${parseFloat(data.balance || 0).toFixed(2)}`;
-        } catch (e) {
-            document.getElementById('user-balance').innerText = "$ 0.00";
+            const response = await fetch(`${BACKEND_URL}/api/profile`, { headers: customHeaders });
+            const data = await response.json();
+            
+            if (data.balance !== undefined) {
+                document.getElementById("balance-display").innerText = `$${data.balance.toFixed(4)}`;
+            } else {
+                document.getElementById("balance-display").innerText = "Error";
+            }
+        } catch (error) {
+            console.error("Balance fetch error:", error);
+            document.getElementById("balance-display").innerText = "Connection Failed";
         }
     }
 
-    // 2. Fetch Countries with Flags
-    async function startGetNumberFlow() {
-        navigateToPage('page-2');
-        const container = document.getElementById('country-list-container');
-        container.innerHTML = '<div class="spinner"></div>';
+    // 2. Buy Number Function
+    async function buyNumber() {
+        const country = document.getElementById("country").value.trim().toLowerCase();
+        const operator = document.getElementById("operator").value.trim().toLowerCase();
+        const service = document.getElementById("service").value.trim().toLowerCase();
 
-        try {
-            const res = await fetch(`${BACKEND_URL}/countries`, { headers: { "ngrok-skip-browser-warning": "true" } });
-            countriesData = await res.json();
-            renderCountries(countriesData);
-        } catch (e) {
-            container.innerHTML = '<p style="text-align:center;">Failed to load countries</p>';
+        if (!country || !operator || !service) {
+            alert("Please fill in all fields!");
+            return;
         }
-    }
 
-    function renderCountries(data) {
-        const container = document.getElementById('country-list-container');
-        container.innerHTML = "";
-        Object.keys(data).sort().forEach(key => {
-            const code = isoCodes[key.toLowerCase()] || 'un';
-            const item = document.createElement('div');
-            item.className = 'list-item';
-            item.onclick = () => selectCountry(key);
-            item.innerHTML = `
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="https://flagcdn.com/w40/${code}.png" class="flag-img" onerror="this.src='https://flagcdn.com/w40/un.png'">
-                    <strong style="text-transform:uppercase;">${key}</strong>
-                </div>
-                <span style="color:var(--primary-glow)">Select ➔</span>
-            `;
-            container.appendChild(item);
-        });
-    }
+        document.getElementById("order-section").style.display = "block";
+        document.getElementById("phone-number").innerText = "Purchasing...";
+        document.getElementById("order-id").innerText = "-";
+        document.getElementById("order-status").innerText = "PROCESSING";
+        document.getElementById("sms-container").className = "loader";
+        document.getElementById("sms-container").innerText = "Waiting for SMS code...";
 
-    function filterCountries() {
-        const q = document.getElementById('country-search').value.toLowerCase();
-        const filtered = {};
-        Object.keys(countriesData).forEach(k => { if(k.toLowerCase().includes(q)) filtered[k] = countriesData[k]; });
-        renderCountries(filtered);
-    }
-
-    // 3. Fetch Services with REAL 5SIM Icons & Stock
-    async function selectCountry(country) {
-        currentCountry = country;
-        const code = isoCodes[country.toLowerCase()] || 'un';
-        document.getElementById('selected-country-header').innerHTML = `
-            <img src="https://flagcdn.com/w40/${code}.png" class="flag-img">
-            <span>COUNTRY: ${country.toUpperCase()}</span>
-        `;
-        navigateToPage('page-3');
-
-        const container = document.getElementById('service-list-container');
-        container.innerHTML = '<div class="spinner"></div>';
+        // আগের কোনো চেকিং বন্ধ করা
+        if (pollingInterval) clearInterval(pollingInterval);
 
         try {
-            const res = await fetch(`${BACKEND_URL}/prices/${country}`, { headers: { "ngrok-skip-browser-warning": "true" } });
-            const data = await res.json();
-            servicesData = data.services || [];
-            renderServices(servicesData);
-        } catch (e) {
-            container.innerHTML = '<p style="text-align:center;">Failed to load services</p>';
+            const response = await fetch(`${BACKEND_URL}/api/buy/${country}/${operator}/${service}`, { headers: customHeaders });
+            const data = await response.json();
+
+            if (data.id && data.phone) {
+                document.getElementById("phone-number").innerText = data.phone;
+                document.getElementById("order-id").innerText = data.id;
+                document.getElementById("order-status").innerText = data.status || "WAITING FOR SMS";
+
+                // ব্যালেন্স আপডেট করা
+                loadBalance();
+
+                // প্রতি ৫ সেকেন্ড পর পর SMS চেক চালু করা
+                pollingInterval = setInterval(() => {
+                    checkSMS(data.id);
+                }, 5000);
+
+            } else {
+                alert("Failed to buy number: " + (data.error || JSON.stringify(data)));
+                document.getElementById("order-section").style.display = "none";
+            }
+        } catch (error) {
+            console.error("Buy number error:", error);
+            alert("Error connecting to backend server.");
+            document.getElementById("order-section").style.display = "none";
         }
     }
 
-    function renderServices(list) {
-        const container = document.getElementById('service-list-container');
-        container.innerHTML = "";
-        list.forEach(s => {
-            const item = document.createElement('div');
-            item.className = 'list-item';
-            item.onclick = () => selectService(s);
-            item.innerHTML = `
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="https://5sim.net/v1/assets/ico/${s.service.toLowerCase()}.ico" class="service-icon" onerror="this.src='https://5sim.net/v1/assets/ico/default.ico'">
-                    <div>
-                        <strong style="text-transform:capitalize;">${s.service}</strong>
-                        <div style="font-size:11px; color:var(--text-sub);">Available: ${s.count} pcs</div>
-                    </div>
-                </div>
-                <span style="color:var(--accent-green); font-weight:800;">$${s.price_usd}</span>
-            `;
-            container.appendChild(item);
-        });
-    }
+    // 3. Auto Check SMS Status Function
+    async function checkSMS(orderId) {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/check/${orderId}`, { headers: customHeaders });
+            const data = await response.json();
 
-    function filterServices() {
-        const q = document.getElementById('service-search').value.toLowerCase();
-        renderServices(servicesData.filter(s => s.service.toLowerCase().includes(q)));
-    }
+            document.getElementById("order-status").innerText = data.status || "WAITING";
 
-    // 4. Select Service & Show Real Operators with Real Prices and Stocks
-    function selectService(serviceObj) {
-        selectedServiceObj = serviceObj;
-        currentService = serviceObj.service;
-        navigateToPage('page-4');
+            // SMS রিসিভ হলে
+            if (data.sms && data.sms.length > 0) {
+                const latestSMS = data.sms[data.sms.length - 1];
+                const smsContainer = document.getElementById("sms-container");
+                smsContainer.className = "sms-code";
+                smsContainer.innerText = `Code: ${latestSMS.code} (Full SMS: ${latestSMS.text})`;
 
-        const container = document.getElementById('operator-list-container');
-        container.innerHTML = "";
-
-        if (serviceObj.operators && serviceObj.operators.length > 0) {
-            serviceObj.operators.forEach(op => {
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                item.onclick = () => selectOperator(op.operator, op.cost);
-                item.innerHTML = `
-                    <div>
-                        <strong>📡 ${op.operator}</strong>
-                        <div style="font-size:11px; color:var(--text-sub);">Stock: ${op.count} pcs</div>
-                    </div>
-                    <span style="color:var(--accent-green); font-weight:800;">$${op.cost}</span>
-                `;
-                container.appendChild(item);
-            });
+                // SMS পেয়ে গেলে অটো-চেক থামানো
+                clearInterval(pollingInterval);
+            } else if (data.status === "FINISHED" || data.status === "CANCELED") {
+                clearInterval(pollingInterval);
+            }
+        } catch (error) {
+            console.error("SMS check error:", error);
         }
     }
 
-    // 5. Select Operator & Set Quantity
-    function selectOperator(opName, cost) {
-        currentOp = opName;
-        unitPrice = cost;
-
-        document.getElementById('sum-country').innerText = currentCountry.toUpperCase();
-        document.getElementById('sum-service').innerText = currentService;
-        document.getElementById('sum-operator').innerText = currentOp;
-        document.getElementById('sum-unit-cost').innerText = `$ ${cost.toFixed(2)}`;
-
-        setQty(1, document.querySelectorAll('.qty-card')[0]);
-        navigateToPage('page-5');
-    }
-
-    function setQty(qty, el) {
-        selectedQty = qty;
-        document.querySelectorAll('.qty-card').forEach(c => c.classList.remove('selected'));
-        if(el) el.classList.add('selected');
-        document.getElementById('sum-total-price').innerText = `$ ${(unitPrice * qty).toFixed(2)}`;
-    }
-
-    // 6. Confirm Purchase & Countdown Timer
-    async function confirmBuy() {
-        alert("Buy order submitted to 5SIM API!");
-        navigateToPage('page-6');
-        startTimer(15 * 60);
-    }
-
-    function startTimer(seconds) {
-        let left = seconds;
-        const total = seconds;
-        const circle = document.getElementById('timer-progress');
-        const display = document.getElementById('timer-display');
-
-        const interval = setInterval(() => {
-            const m = Math.floor(left / 60);
-            const s = left % 60;
-            display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            circle.style.strokeDashoffset = 339.29 - (left / total) * 339.29;
-
-            if(--left < 0) clearInterval(interval);
-        }, 1000);
-    }
-
-    window.onload = fetchRealBalance;
+    // পেজ লোড হওয়ার সাথে সাথে ব্যালেন্স লোড হবে
+    window.onload = loadBalance;
 </script>
+
 </body>
 </html>
