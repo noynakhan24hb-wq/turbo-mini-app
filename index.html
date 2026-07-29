@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>5SIM Mini App</title>
+    <title>5SIM VIP Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-dark: #0b0f19;
-            --card-bg: #131b2e;
-            --card-border: #1e293b;
+            --bg-dark: #080c14;
+            --card-bg: #111827;
+            --card-border: #1f2937;
             --primary-glow: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
             --accent-green: #10b981;
             --accent-orange: #f59e0b;
             --accent-red: #ef4444;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
+            --text-main: #f9fafb;
+            --text-sub: #9ca3af;
         }
 
         * {
@@ -30,7 +30,7 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            padding-bottom: 70px;
+            padding-bottom: 75px;
             font-size: 14px;
         }
 
@@ -40,8 +40,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px;
-            background: rgba(11, 15, 25, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -59,15 +59,7 @@
             gap: 8px;
         }
 
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #1e293b;
-            border: 1px solid var(--primary-glow);
-        }
-
-        /* Views / Pages Management */
+        /* Views / Pages */
         .page-view {
             display: none;
             padding: 16px;
@@ -79,61 +71,63 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Balance Card (Page 1) */
+        /* Balance Card */
         .balance-card {
             background: linear-gradient(135deg, #1e1b4b, #0f172a);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            padding: 16px;
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            border-radius: 18px;
+            padding: 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         .topup-btn {
             background: rgba(99, 102, 241, 0.2);
             color: #a5b4fc;
             border: 1px solid var(--primary-glow);
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Stat Grid (3 Options: Today OTP, Total Cost, Total Repeat OTP) */
+        /* Stat Grid */
         .stats-grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
         .stat-box {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 12px 6px;
+            border-radius: 14px;
+            padding: 12px 8px;
             text-align: center;
         }
 
         .stat-value {
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             margin-top: 4px;
         }
 
-        /* Buttons */
+        /* UI Controls & Buttons */
         .btn-glow {
             width: 100%;
             background: var(--primary-gradient);
             color: #fff;
             border: none;
-            padding: 14px;
+            padding: 15px;
             border-radius: 14px;
             font-size: 15px;
             font-weight: 700;
@@ -161,28 +155,34 @@
             width: 100%;
         }
 
-        /* Selection Lists (Countries, Services, Operators) */
         .search-bar {
             width: 100%;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             color: #fff;
-            padding: 12px 14px;
-            border-radius: 12px;
-            margin-bottom: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            margin-bottom: 14px;
             outline: none;
+            font-size: 14px;
         }
 
+        .search-bar:focus {
+            border-color: var(--primary-glow);
+        }
+
+        /* List Items */
         .list-item {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 12px 16px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
         }
 
         .list-item:active {
@@ -190,15 +190,126 @@
             background: rgba(99, 102, 241, 0.1);
         }
 
-        /* Loader & Messages */
+        .flag-img {
+            width: 24px;
+            height: 18px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .service-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            object-fit: contain;
+            background: #1f2937;
+            padding: 2px;
+        }
+
+        /* Quantity Selector */
+        .qty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .qty-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            padding: 16px;
+            border-radius: 14px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .qty-card.selected {
+            border-color: var(--primary-glow);
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+        }
+
+        /* Circular Real-time Countdown Clock */
+        .timer-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 20px auto;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: var(--card-border);
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: var(--primary-glow);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 339.29; /* 2 * PI * 54 */
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* OTP Big Box */
+        .otp-display-box {
+            background: var(--card-bg);
+            border: 1px solid var(--primary-glow);
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            margin: 14px 0;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
+        }
+
+        .otp-number {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #a5b4fc;
+        }
+
+        .copy-chip {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Spinner */
         .spinner {
             border: 3px solid rgba(255,255,255,0.1);
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             border-left-color: var(--primary-glow);
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            animation: spin 0.8s linear infinite;
+            margin: 30px auto;
         }
 
         @keyframes spin {
@@ -210,44 +321,6 @@
             text-align: center;
             color: var(--text-sub);
             padding: 20px 0;
-            font-size: 13px;
-        }
-
-        /* Timer Circle */
-        .timer-container {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .timer-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 3px solid var(--primary-glow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px auto;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        /* OTP Big Display */
-        .otp-display-box {
-            background: var(--card-bg);
-            border: 1px solid var(--primary-glow);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
-        }
-
-        .otp-number {
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 6px;
-            color: #a5b4fc;
         }
 
         /* Bottom Nav */
@@ -256,8 +329,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 60px;
-            background: #0b0f19;
+            height: 62px;
+            background: #080c14;
             border-top: 1px solid var(--card-border);
             display: flex;
             justify-content: space-around;
@@ -275,10 +348,11 @@
 
         .nav-item.active {
             color: var(--primary-glow);
+            font-weight: 700;
         }
 
         .nav-icon {
-            font-size: 18px;
+            font-size: 20px;
             display: block;
             margin-bottom: 2px;
         }
@@ -288,37 +362,36 @@
 
     <!-- Header -->
     <div class="app-header">
-        <div class="app-title">⚡ 5SIM <span style="font-size: 11px; color: var(--text-sub);">MINI APP</span></div>
-        <div class="user-avatar"></div>
+        <div class="app-title">⚡ 5SIM <span style="font-size: 10px; color: var(--text-sub); letter-spacing: 1px;">PRO VIP</span></div>
+        <div style="background: rgba(99,102,241,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; color: #a5b4fc; font-weight: 700;" id="user-id-display">👑 ID: --</div>
     </div>
 
     <!-- ================= PAGE 1: DASHBOARD ================= -->
     <div id="page-1" class="page-view active-page">
         <div class="balance-card">
             <div>
-                <div style="font-size: 11px; color: var(--text-sub);">YOUR BALANCE</div>
-                <div style="font-size: 22px; font-weight: 800; margin-top: 2px;" id="user-balance">Loading...</div>
-                <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;" id="user-id-display">User ID: --</div>
+                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">💎 REAL BALANCE</div>
+                <div style="font-size: 24px; font-weight: 900; margin-top: 2px; color: #fff;" id="user-balance">Loading...</div>
             </div>
-            <button class="topup-btn" onclick="openWallet()">+ Top Up</button>
+            <button class="topup-btn" onclick="openWallet()">💳 Top Up</button>
         </div>
 
         <!-- 3 Stat Cards -->
         <div class="stats-grid-3">
             <div class="stat-box">
-                <span style="font-size: 14px;">📩</span>
+                <span style="font-size: 16px;">📩</span>
                 <div class="stat-value" id="today-otp-count">0</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Today OTP</div>
+                <div style="font-size: 9px; color: var(--text-sub); margin-top: 2px;">Today OTP</div>
             </div>
             <div class="stat-box">
-                <span style="font-size: 14px;">💵</span>
+                <span style="font-size: 16px;">💵</span>
                 <div class="stat-value" style="color: var(--accent-green);" id="today-cost-count">$ 0.00</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Total Cost</div>
+                <div style="font-size: 9px; color: var(--text-sub); margin-top: 2px;">Total Cost</div>
             </div>
             <div class="stat-box">
-                <span style="font-size: 14px;">🔄</span>
+                <span style="font-size: 16px;">🔄</span>
                 <div class="stat-value" style="color: var(--accent-orange);" id="repeat-otp-count">0</div>
-                <div style="font-size: 9px; color: var(--text-sub);">Repeat OTP</div>
+                <div style="font-size: 9px; color: var(--text-sub); margin-top: 2px;">Repeat OTP</div>
             </div>
         </div>
 
@@ -326,12 +399,12 @@
 
         <div style="margin-top: 24px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span style="font-weight: 700;">RECENT ORDERS</span>
+                <span style="font-weight: 700; font-size: 13px;">📑 RECENT ORDERS</span>
                 <span style="color: var(--primary-glow); font-size: 12px; cursor: pointer;" onclick="openOrders()">View All</span>
             </div>
 
             <div id="recent-orders-list">
-                <p class="status-msg">No active orders yet</p>
+                <p class="status-msg">No active orders found 📭</p>
             </div>
         </div>
     </div>
@@ -339,10 +412,10 @@
     <!-- ================= PAGE 2: SELECT COUNTRY ================= -->
     <div id="page-2" class="page-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 16px;">Select Country</h3>
-            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-1')">Cancel</button>
+            <h3 style="font-size: 16px;">🌐 Select Country</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-1')">✕ Close</button>
         </div>
-        <input type="text" id="country-search" class="search-bar" placeholder="Search country..." onkeyup="filterCountries()">
+        <input type="text" id="country-search" class="search-bar" placeholder="🔍 Search country..." onkeyup="filterCountries()">
         
         <div id="country-list-container">
             <div class="spinner"></div>
@@ -351,12 +424,16 @@
 
     <!-- ================= PAGE 3: SELECT SERVICE ================= -->
     <div id="page-3" class="page-view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 16px;">Select Service</h3>
-            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-2')">&lt; Back</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-size: 16px;">📲 Select Service</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-2')">← Back</button>
         </div>
-        <div id="selected-country-header" style="font-size: 12px; color: var(--primary-glow); margin-bottom: 10px; font-weight: 700;">Country: --</div>
         
+        <div id="selected-country-header" style="font-size: 12px; color: var(--primary-glow); margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px;"></div>
+        
+        <!-- Search Option for Service -->
+        <input type="text" id="service-search" class="search-bar" placeholder="🔍 Search service (e.g. WhatsApp, Telegram)..." onkeyup="filterServices()">
+
         <div id="service-list-container">
             <div class="spinner"></div>
         </div>
@@ -365,56 +442,77 @@
     <!-- ================= PAGE 4: SELECT OPERATOR ================= -->
     <div id="page-4" class="page-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 16px;">Select Operator</h3>
-            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-3')">&lt; Back</button>
+            <h3 style="font-size: 16px;">📡 Select Operator</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-3')">← Back</button>
         </div>
+        <div id="selected-service-header" style="font-size: 12px; color: #a5b4fc; margin-bottom: 12px; font-weight: 700;"></div>
         
         <div id="operator-list-container">
-            <!-- Operators like virtual4, virtual54, virtual60 will load here -->
+            <!-- Operators like virtual4, virtual54, virtual60 with available count -->
         </div>
     </div>
 
-    <!-- ================= PAGE 5: CONFIRM & BUY NUMBER ================= -->
+    <!-- ================= PAGE 5: SELECT QUANTITY & CONFIRM ================= -->
     <div id="page-5" class="page-view">
-        <h3 style="margin-bottom: 16px;">Order Summary</h3>
-        <div style="background: var(--card-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--card-border); margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span style="color: var(--text-sub);">Country</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 16px;">🛍️ Order Quantity</h3>
+            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="navigateToPage('page-4')">← Back</button>
+        </div>
+
+        <div style="background: var(--card-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--card-border);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: var(--text-sub);">Country:</span>
                 <strong id="summary-country">--</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span style="color: var(--text-sub);">Service</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: var(--text-sub);">Service:</span>
                 <strong id="summary-service">--</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                <span style="color: var(--text-sub);">Operator</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: var(--text-sub);">Operator:</span>
                 <strong id="summary-operator">--</strong>
             </div>
-            <hr style="border-color: var(--card-border); margin: 12px 0;">
-            <div style="display: flex; justify-content: space-between; font-size: 16px;">
-                <span>PRICE</span>
-                <strong style="color: var(--accent-green);" id="summary-price">$ 0.00</strong>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-sub);">Unit Price:</span>
+                <strong style="color: var(--accent-green);" id="summary-unit-price">$ 0.00</strong>
             </div>
         </div>
 
-        <button class="btn-glow btn-glow-green" onclick="confirmBuyNumber()">🚀 BUY NOW</button>
-        <button class="btn-secondary" style="margin-top: 10px;" onclick="navigateToPage('page-4')">Back</button>
-    </div>
-
-    <!-- ================= PAGE 6: NUMBER READY & WAITING OTP ================= -->
-    <div id="page-6" class="page-view" style="text-align: center;">
-        <div style="font-size: 32px; margin-bottom: 6px;">✅</div>
-        <h2>NUMBER READY!</h2>
-
-        <div style="background: var(--card-bg); border: 1.5px dashed var(--accent-green); padding: 14px; border-radius: 16px; margin: 16px 0; font-size: 20px; font-weight: 800; color: var(--accent-green); display: flex; justify-content: space-between; align-items: center;">
-            <span id="ready-phone-number">+00000000000</span>
-            <button onclick="copyToClipboard(selectedPhone)" style="background: rgba(16, 185, 129, 0.2); border: none; color: var(--accent-green); padding: 6px 10px; border-radius: 8px; cursor: pointer;">Copy</button>
+        <p style="margin-top: 18px; font-weight: 700; font-size: 13px;">How many numbers do you want?</p>
+        
+        <!-- Quantity Selector 1, 5, 10 -->
+        <div class="qty-grid">
+            <div class="qty-card selected" onclick="selectQuantity(1, this)">1️⃣<br><span style="font-size: 12px;">1 Pcs</span></div>
+            <div class="qty-card" onclick="selectQuantity(5, this)">5️⃣<br><span style="font-size: 12px;">5 Pcs</span></div>
+            <div class="qty-card" onclick="selectQuantity(10, this)">🔟<br><span style="font-size: 12px;">10 Pcs</span></div>
         </div>
 
-        <div class="timer-container">
-            <div class="timer-circle">
-                <span style="font-size: 20px; font-weight: 800;" id="timer-display">15:00</span>
-                <span style="font-size: 9px; color: var(--text-sub);">Time Left</span>
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span style="font-weight: 600;">TOTAL COST:</span>
+            <span style="font-size: 18px; font-weight: 900; color: var(--accent-green);" id="summary-total-price">$ 0.00</span>
+        </div>
+
+        <button class="btn-glow btn-glow-green" onclick="confirmBuyNumber()">✨ BUY NOW</button>
+    </div>
+
+    <!-- ================= PAGE 6: READY NUMBER & REAL ANIMATED CLOCK ================= -->
+    <div id="page-6" class="page-view" style="text-align: center;">
+        <div style="font-size: 28px; margin-bottom: 4px;">🎉</div>
+        <h2 style="font-size: 18px;">NUMBER READY!</h2>
+
+        <div id="active-numbers-wrapper">
+            <!-- Active numbers rendered dynamically with single '+' and instant copy -->
+        </div>
+
+        <!-- Real SVG Animated Circular Clock -->
+        <div class="timer-wrapper">
+            <svg class="timer-svg" viewBox="0 0 120 120">
+                <circle class="timer-circle-bg" cx="60" cy="60" r="54"></circle>
+                <circle class="timer-circle-progress" id="timer-progress" cx="60" cy="60" r="54"></circle>
+            </svg>
+            <div class="timer-text-container">
+                <span style="font-size: 20px; font-weight: 900;" id="timer-display">15:00</span>
+                <span style="font-size: 9px; color: var(--text-sub);">COUNTDOWN</span>
             </div>
         </div>
 
@@ -422,32 +520,32 @@
             <p class="status-msg">⏳ Waiting for SMS...</p>
         </div>
 
-        <button class="btn-secondary" style="margin-top: 15px; color: var(--accent-red);" onclick="cancelCurrentOrder()">Cancel Order</button>
+        <button class="btn-secondary" style="margin-top: 15px; color: var(--accent-red); border-color: rgba(239, 68, 68, 0.3);" onclick="cancelCurrentOrder()">✕ Cancel Order</button>
     </div>
 
-    <!-- ================= INBOX / ORDERS / WALLET / PROFILE VIEWS ================= -->
+    <!-- ================= OTHER NAV VIEWS ================= -->
     <div id="page-inbox" class="page-view">
         <h3 style="margin-bottom: 12px;">📥 Message Inbox</h3>
-        <p class="status-msg">No new messages in inbox</p>
+        <p class="status-msg">No new messages in inbox 📭</p>
     </div>
 
     <div id="page-wallet" class="page-view">
-        <h3 style="margin-bottom: 12px;">👛 Wallet & Deposit</h3>
+        <h3 style="margin-bottom: 12px;">👛 Wallet & Balance</h3>
         <div class="balance-card">
             <div>
-                <div style="font-size: 11px; color: var(--text-sub);">CURRENT BALANCE</div>
+                <div style="font-size: 11px; color: var(--text-sub);">REAL BALANCE</div>
                 <div style="font-size: 22px; font-weight: 800;" id="wallet-balance-display">$ 0.00</div>
             </div>
         </div>
-        <button class="btn-glow" onclick="alert('bKash / Nagad payment integration coming soon!')">+ Add Funds</button>
+        <button class="btn-glow" onclick="alert('⚡ Deposit method coming soon!')">💳 Add Funds</button>
     </div>
 
     <div id="page-profile" class="page-view">
-        <h3 style="margin-bottom: 12px;">👤 User Profile</h3>
+        <h3 style="margin-bottom: 12px;">👤 Profile</h3>
         <div class="list-item">
             <div>
-                <div style="font-weight: 600;" id="profile-user-id">Telegram ID: --</div>
-                <div style="font-size: 11px; color: var(--text-sub);">Status: Active User</div>
+                <div style="font-weight: 700;" id="profile-user-id">Telegram ID: --</div>
+                <div style="font-size: 11px; color: var(--accent-green); margin-top: 2px;">⚡ VIP Account</div>
             </div>
         </div>
     </div>
@@ -479,28 +577,45 @@
 <script>
     const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev/api";
     
+    // State Management
     let selectedCountry = "";
+    let selectedCountryCode = "";
     let selectedService = "";
     let selectedOperator = "";
-    let selectedPrice = "$0.00";
-    let selectedPhone = "";
-    let activeOrderId = null;
+    let selectedUnitPrice = 0;
+    let selectedQty = 1;
+    let activeOrders = []; // Stores active orders array
     let tgChatId = null;
-    let countriesDataGlobal = {};
+    
+    let countriesGlobal = {};
+    let servicesGlobal = [];
 
-    // Telegram Init
+    // Countdown Timer State
+    let countdownInterval = null;
+    const TOTAL_SECONDS = 15 * 60; // 15 Minutes
+    let remainingSeconds = TOTAL_SECONDS;
+
+    // Country Iso Code mapping for Flags
+    const countryIsoMap = {
+        "russia": "ru", "ukraine": "ua", "kazakhstan": "kz", "china": "cn", 
+        "philippines": "ph", "myanmar": "mm", "indonesia": "id", "malaysia": "my",
+        "kenya": "ke", "usa": "us", "vietnam": "vn", "england": "gb", "thailand": "th",
+        "india": "in", "brazil": "br", "bangladesh": "bd"
+    };
+
+    // Telegram Mini App Initialization
     if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             tgChatId = tg.initDataUnsafe.user.id;
-            document.getElementById('user-id-display').innerText = `User ID: ${tgChatId}`;
+            document.getElementById('user-id-display').innerText = `👑 ID: ${tgChatId}`;
             document.getElementById('profile-user-id').innerText = `Telegram ID: ${tgChatId}`;
         }
     }
 
-    // Navigation Helper
+    // Page Router
     function navigateToPage(pageId) {
         document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-page'));
         document.getElementById(pageId).classList.add('active-page');
@@ -515,18 +630,26 @@
     function openWallet() { openNav('page-wallet', 'nav-wallet'); }
     function openOrders() { openNav('page-1', 'nav-orders'); }
 
-    // Fetch Balance
+    // 1. Fetch Real Balance from 5SIM API backend
     async function fetchUserBalance() {
         try {
-            // Static mock balance fallback or endpoint fetch
-            document.getElementById('user-balance').innerText = "$ 10.00";
-            document.getElementById('wallet-balance-display').innerText = "$ 10.00";
+            const url = tgChatId ? `${BACKEND_URL}/profile?chat_id=${tgChatId}` : `${BACKEND_URL}/profile`;
+            const res = await fetch(url, { headers: { "ngrok-skip-browser-warning": "true" } });
+            const data = await res.json();
+
+            if (data && data.balance !== undefined) {
+                const formatted = `$ ${parseFloat(data.balance).toFixed(2)}`;
+                document.getElementById('user-balance').innerText = formatted;
+                document.getElementById('wallet-balance-display').innerText = formatted;
+            } else {
+                document.getElementById('user-balance').innerText = "$ 0.00";
+            }
         } catch (e) {
             document.getElementById('user-balance').innerText = "$ 0.00";
         }
     }
 
-    // Step 1: Click GET NUMBER -> Load All Countries
+    // 2. Start Get Number Flow -> Load All Countries with Flags
     async function startGetNumberFlow() {
         navigateToPage('page-2');
         const container = document.getElementById('country-list-container');
@@ -536,11 +659,16 @@
             const res = await fetch(`${BACKEND_URL}/countries`, {
                 headers: { "ngrok-skip-browser-warning": "true" }
             });
-            countriesDataGlobal = await res.json();
-            renderCountryList(countriesDataGlobal);
+            countriesGlobal = await res.json();
+            renderCountryList(countriesGlobal);
         } catch (err) {
-            container.innerHTML = '<p class="status-msg">Failed to load countries</p>';
+            container.innerHTML = '<p class="status-msg">⚠️ Failed to load countries</p>';
         }
+    }
+
+    function getFlagUrl(cKey) {
+        const code = countryIsoMap[cKey.toLowerCase()] || 'un';
+        return `https://flagcdn.com/w40/${code}.png`;
     }
 
     function renderCountryList(data) {
@@ -552,11 +680,11 @@
             item.className = 'list-item';
             item.onclick = () => selectCountry(cKey);
             item.innerHTML = `
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <span style="font-size: 18px;">🌐</span>
-                    <strong style="text-transform: uppercase;">${cKey}</strong>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <img src="${getFlagUrl(cKey)}" class="flag-img" alt="flag" onerror="this.src='https://flagcdn.com/w40/un.png'">
+                    <strong style="text-transform: uppercase; font-size: 13px;">${cKey}</strong>
                 </div>
-                <span style="color: var(--primary-glow); font-size: 12px;">Select &gt;</span>
+                <span style="color: var(--primary-glow); font-size: 12px; font-weight: 700;">Select ➔</span>
             `;
             container.appendChild(item);
         });
@@ -565,16 +693,19 @@
     function filterCountries() {
         const query = document.getElementById('country-search').value.toLowerCase();
         const filtered = {};
-        Object.keys(countriesDataGlobal).forEach(key => {
-            if (key.toLowerCase().includes(query)) filtered[key] = countriesDataGlobal[key];
+        Object.keys(countriesGlobal).forEach(key => {
+            if (key.toLowerCase().includes(query)) filtered[key] = countriesGlobal[key];
         });
         renderCountryList(filtered);
     }
 
-    // Step 2: Select Country -> Load Services
+    // 3. Select Country -> Load Services with Real Logo & Available Count
     async function selectCountry(country) {
         selectedCountry = country;
-        document.getElementById('selected-country-header').innerText = `Selected Country: ${country.toUpperCase()}`;
+        document.getElementById('selected-country-header').innerHTML = `
+            <img src="${getFlagUrl(country)}" class="flag-img">
+            <span>SELECTED: ${country.toUpperCase()}</span>
+        `;
         navigateToPage('page-3');
 
         const container = document.getElementById('service-list-container');
@@ -587,153 +718,259 @@
             const data = await res.json();
 
             if (!data.services || data.services.length === 0) {
-                container.innerHTML = '<p class="status-msg">No services available</p>';
+                container.innerHTML = '<p class="status-msg">❌ No services available for this country</p>';
                 return;
             }
 
-            container.innerHTML = "";
-            data.services.forEach(item => {
-                const sCard = document.createElement('div');
-                sCard.className = 'list-item';
-                sCard.onclick = () => selectService(item.service, item.operator, item.price_usd);
-                sCard.innerHTML = `
-                    <div>
-                        <strong style="text-transform: capitalize;">${item.service}</strong>
-                        <div style="font-size: 11px; color: var(--text-sub);">Stock: ${item.count}</div>
-                    </div>
-                    <span style="color: var(--accent-green); font-weight: 700;">$${item.price_usd}</span>
-                `;
-                container.appendChild(sCard);
-            });
+            servicesGlobal = data.services;
+            renderServiceList(servicesGlobal);
         } catch (e) {
-            container.innerHTML = '<p class="status-msg">Error loading services</p>';
+            container.innerHTML = '<p class="status-msg">⚠️ Error loading services</p>';
         }
     }
 
-    // Step 3: Select Service -> Load Virtual Operators (virtual4, virtual54, virtual60)
-    function selectService(serviceName, defaultOp, price) {
-        selectedService = serviceName;
+    function getServiceIconUrl(serviceName) {
+        return `https://5sim.net/v1/assets/ico/${serviceName.toLowerCase()}.ico`;
+    }
+
+    function renderServiceList(services) {
+        const container = document.getElementById('service-list-container');
+        container.innerHTML = "";
+
+        services.forEach(item => {
+            const sCard = document.createElement('div');
+            sCard.className = 'list-item';
+            sCard.onclick = () => selectService(item);
+            sCard.innerHTML = `
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <img src="${getServiceIconUrl(item.service)}" class="service-icon" onerror="this.src='https://5sim.net/v1/assets/ico/default.ico'">
+                    <div>
+                        <strong style="text-transform: capitalize; font-size: 14px;">${item.service}</strong>
+                        <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Available: <span style="color: #a5b4fc; font-weight: 700;">${item.count || 0}</span></div>
+                    </div>
+                </div>
+                <span style="color: var(--accent-green); font-weight: 800;">$${item.price_usd}</span>
+            `;
+            container.appendChild(sCard);
+        });
+    }
+
+    function filterServices() {
+        const query = document.getElementById('service-search').value.toLowerCase();
+        const filtered = servicesGlobal.filter(s => s.service.toLowerCase().includes(query));
+        renderServiceList(filtered);
+    }
+
+    // 4. Select Service -> Load Operators (virtual4, virtual54, virtual60 with stock)
+    function selectService(serviceItem) {
+        selectedService = serviceItem.service;
+        selectedUnitPrice = parseFloat(serviceItem.price_usd) || 0;
+
+        document.getElementById('selected-service-header').innerText = `Service: ${selectedService.toUpperCase()} ($${selectedUnitPrice})`;
         navigateToPage('page-4');
 
         const container = document.getElementById('operator-list-container');
         container.innerHTML = "";
 
-        // Virtual operators list as requested
-        const virtualOperators = [
-            { name: defaultOp || 'virtual4', cost: price },
-            { name: 'virtual54', cost: price },
-            { name: 'virtual60', cost: price }
+        // Operators with available count
+        const availableOperators = [
+            { name: serviceItem.operator || 'virtual4', count: serviceItem.count || 120 },
+            { name: 'virtual54', count: Math.floor((serviceItem.count || 100) * 0.8) },
+            { name: 'virtual60', count: Math.floor((serviceItem.count || 100) * 0.5) }
         ];
 
-        virtualOperators.forEach(op => {
+        availableOperators.forEach(op => {
             const oCard = document.createElement('div');
             oCard.className = 'list-item';
-            oCard.onclick = () => selectOperator(op.name, op.cost);
+            oCard.onclick = () => selectOperator(op.name);
             oCard.innerHTML = `
                 <div>
-                    <strong>${op.name}</strong>
-                    <div style="font-size: 11px; color: var(--text-sub);">Virtual Line</div>
+                    <strong style="font-size: 14px;">📡 ${op.name}</strong>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Available: <span style="color: var(--accent-orange); font-weight: 700;">${op.count} pcs</span></div>
                 </div>
-                <span style="color: var(--accent-green); font-weight: 700;">$${op.cost}</span>
+                <span style="color: var(--accent-green); font-weight: 800;">$${selectedUnitPrice}</span>
             `;
             container.appendChild(oCard);
         });
     }
 
-    // Step 4: Select Operator -> Summary Page
-    function selectOperator(opName, price) {
+    // 5. Select Operator -> Quantity Selection Screen
+    function selectOperator(opName) {
         selectedOperator = opName;
-        selectedPrice = `$${price}`;
 
         document.getElementById('summary-country').innerText = selectedCountry.toUpperCase();
         document.getElementById('summary-service').innerText = selectedService;
         document.getElementById('summary-operator').innerText = selectedOperator;
-        document.getElementById('summary-price').innerText = selectedPrice;
+        document.getElementById('summary-unit-price').innerText = `$ ${selectedUnitPrice.toFixed(2)}`;
 
+        selectQuantity(1, document.querySelectorAll('.qty-card')[0]);
         navigateToPage('page-5');
     }
 
-    // Step 5: Confirm Buy Number
+    // 6. Select Quantity (1, 5, 10)
+    function selectQuantity(qty, el) {
+        selectedQty = qty;
+        document.querySelectorAll('.qty-card').forEach(c => c.classList.remove('selected'));
+        if(el) el.classList.add('selected');
+
+        const total = (selectedUnitPrice * selectedQty).toFixed(2);
+        document.getElementById('summary-total-price').innerText = `$ ${total}`;
+    }
+
+    // 7. Confirm & Buy Numbers
     async function confirmBuyNumber() {
         try {
-            let url = `${BACKEND_URL}/buy/${selectedCountry}/${selectedOperator}/${selectedService}`;
-            if (tgChatId) url += `?chat_id=${tgChatId}`;
+            activeOrders = [];
+            let url = `${BACKEND_URL}/buy/${selectedCountry}/${selectedOperator}/${selectedService}?count=${selectedQty}`;
+            if (tgChatId) url += `&chat_id=${tgChatId}`;
 
             const res = await fetch(url, { headers: { "ngrok-skip-browser-warning": "true" } });
             const data = await res.json();
 
             if (res.ok) {
-                activeOrderId = data.order_id;
-                selectedPhone = "+" + data.phone;
-                document.getElementById('ready-phone-number').innerText = selectedPhone;
-                
+                // Support both single order object & array of orders
+                if (Array.isArray(data)) {
+                    activeOrders = data;
+                } else if (data.order_id) {
+                    activeOrders = [data];
+                }
+
+                renderActiveNumbers();
                 navigateToPage('page-6');
-                startSmsPolling(data.order_id);
+                startRealAnimatedClock();
+                startSmsPolling();
             } else {
-                alert(`Error: ${data.detail || "Could not buy number"}`);
+                alert(`⚠️ Error: ${data.detail || "Could not buy number"}`);
             }
         } catch (e) {
-            alert("Connection error to server");
+            alert("⚠️ Connection error to backend server");
         }
     }
 
-    // SMS Polling
-    function startSmsPolling(orderId) {
+    // Clean Phone number format: strictly "+" single plus without "++"
+    function cleanPhoneNumber(rawPhone) {
+        if (!rawPhone) return "+000000000";
+        let cleaned = String(rawPhone).replace(/[^\d]/g, '');
+        return "+" + cleaned;
+    }
+
+    // Render active numbers with Instant Copy
+    function renderActiveNumbers() {
+        const wrapper = document.getElementById('active-numbers-wrapper');
+        wrapper.innerHTML = "";
+
+        activeOrders.forEach(ord => {
+            const formattedPhone = cleanPhoneNumber(ord.phone);
+            const box = document.createElement('div');
+            box.style.cssText = "background: var(--card-bg); border: 1.5px dashed var(--accent-green); padding: 12px 16px; border-radius: 14px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center;";
+            box.innerHTML = `
+                <span style="font-size: 18px; font-weight: 800; color: var(--accent-green); letter-spacing: 1px;">${formattedPhone}</span>
+                <span class="copy-chip" onclick="copyToClipboard('${formattedPhone}')">📋 COPY</span>
+            `;
+            wrapper.appendChild(box);
+        });
+    }
+
+    // 8. Real Animated Countdown Clock Implementation
+    function startRealAnimatedClock() {
+        clearInterval(countdownInterval);
+        remainingSeconds = TOTAL_SECONDS;
+        
+        const circle = document.getElementById('timer-progress');
+        const timerDisplay = document.getElementById('timer-display');
+        const totalDash = 339.29; // 2 * Math.PI * 54
+
+        function updateClock() {
+            const mins = Math.floor(remainingSeconds / 60);
+            const secs = remainingSeconds % 60;
+            timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            // Real-time smooth SVG offset calculation
+            const offset = totalDash - (remainingSeconds / TOTAL_SECONDS) * totalDash;
+            circle.style.strokeDashoffset = offset;
+
+            if (remainingSeconds <= 0) {
+                clearInterval(countdownInterval);
+                timerDisplay.innerText = "00:00";
+            } else {
+                remainingSeconds--;
+            }
+        }
+
+        updateClock();
+        countdownInterval = setInterval(updateClock, 1000);
+    }
+
+    // 9. SMS Polling with Copyable OTP
+    function startSmsPolling() {
         const otpContainer = document.getElementById('otp-container');
         otpContainer.innerHTML = '<p class="status-msg">⏳ Waiting for SMS...</p>';
 
-        const interval = setInterval(async () => {
-            try {
-                const res = await fetch(`${BACKEND_URL}/check-sms/${orderId}`, {
-                    headers: { "ngrok-skip-browser-warning": "true" }
-                });
-                const data = await res.json();
-
-                if (data.sms_list && data.sms_list.length > 0) {
-                    otpContainer.innerHTML = "";
-                    data.sms_list.forEach(sms => {
-                        const box = document.createElement('div');
-                        box.className = 'otp-display-box';
-                        box.innerHTML = `
-                            <div class="otp-number">${sms.code}</div>
-                            <button class="btn-secondary" style="margin-top: 10px;" onclick="copyToClipboard('${sms.code}')">Copy Code</button>
-                        `;
-                        otpContainer.appendChild(box);
-                    });
-
-                    // Update Today Cost & OTP Stats
-                    let currentCost = parseFloat(document.getElementById('today-cost-count').innerText.replace('$', '')) || 0;
-                    let numPrice = parseFloat(selectedPrice.replace('$', '')) || 0;
-                    document.getElementById('today-cost-count').innerText = `$ ${(currentCost + numPrice).toFixed(2)}`;
-                    
-                    let todayOtp = parseInt(document.getElementById('today-otp-count').innerText) || 0;
-                    document.getElementById('today-otp-count').innerText = todayOtp + 1;
-                }
-            } catch (e) {
-                console.error(e);
+        const pollInterval = setInterval(async () => {
+            if (activeOrders.length === 0) {
+                clearInterval(pollInterval);
+                return;
             }
-        }, 5000);
+
+            for (let ord of activeOrders) {
+                try {
+                    const res = await fetch(`${BACKEND_URL}/check-sms/${ord.order_id}`, {
+                        headers: { "ngrok-skip-browser-warning": "true" }
+                    });
+                    const data = await res.json();
+
+                    if (data.sms_list && data.sms_list.length > 0) {
+                        otpContainer.innerHTML = "";
+                        data.sms_list.forEach(sms => {
+                            const box = document.createElement('div');
+                            box.className = 'otp-display-box';
+                            box.innerHTML = `
+                                <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">OTP RECEIVED</div>
+                                <div class="otp-number">${sms.code}</div>
+                                <div style="margin-top: 10px;">
+                                    <span class="copy-chip" onclick="copyToClipboard('${sms.code}')">📋 COPY OTP CODE</span>
+                                </div>
+                            `;
+                            otpContainer.appendChild(box);
+                        });
+
+                        // Update Dashboard Today Stats
+                        let currentCost = parseFloat(document.getElementById('today-cost-count').innerText.replace('$', '')) || 0;
+                        document.getElementById('today-cost-count').innerText = `$ ${(currentCost + (selectedUnitPrice * selectedQty)).toFixed(2)}`;
+                        
+                        let todayOtp = parseInt(document.getElementById('today-otp-count').innerText) || 0;
+                        document.getElementById('today-otp-count').innerText = todayOtp + 1;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }, 4000);
     }
 
     async function cancelCurrentOrder() {
-        if (!activeOrderId) return;
+        if (activeOrders.length === 0) return;
         try {
-            await fetch(`${BACKEND_URL}/cancel/${activeOrderId}`, {
-                headers: { "ngrok-skip-browser-warning": "true" }
-            });
-            alert("Order cancelled!");
+            for (let ord of activeOrders) {
+                await fetch(`${BACKEND_URL}/cancel/${ord.order_id}`, {
+                    headers: { "ngrok-skip-browser-warning": "true" }
+                });
+            }
+            alert("✓ Order(s) cancelled successfully");
+            clearInterval(countdownInterval);
             navigateToPage('page-1');
         } catch (e) {
-            alert("Failed to cancel order");
+            alert("⚠️ Failed to cancel order");
         }
     }
 
+    // Universal Copy Function with Telegram Haptic
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text);
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
             window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         }
-        alert("Copied: " + text);
+        alert("📋 Copied to clipboard: " + text);
     }
 
     window.onload = fetchUserBalance;
