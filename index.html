@@ -1,243 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5SIM SMS Activator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>5SIM SMS Activator Mini App</title>
     <style>
+        :root {
+            --primary-color: #007aff;
+            --primary-hover: #0056b3;
+            --bg-color: #f2f4f7;
+            --card-bg: #ffffff;
+            --text-color: #1c1c1e;
+            --text-muted: #8e8e93;
+            --success-color: #34c759;
+            --danger-color: #ff3b30;
+            --warning-color: #ff9500;
+            --border-radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f6f9;
+            background-color: var(--bg-color);
             margin: 0;
-            padding: 15px;
-            color: #333;
+            padding: 12px;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
         }
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            background: #ffffff;
+
+        .mini-app {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
             padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            position: relative;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
         }
-        h2 { text-align: center; color: #007bff; margin-top: 0; font-size: 22px; }
-        .card {
-            background: #eef5ff;
-            padding: 12px 16px;
-            border-radius: 10px;
+
+        .header {
+            text-align: center;
             margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #007aff, #0056b3);
+            color: white;
+            padding: 16px;
+            border-radius: var(--border-radius);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
         }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #444; }
-        select, button {
+
+        .balance-title {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .balance-amount {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #dcdfe6;
-            box-sizing: border-box;
-            font-size: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #e5e5ea;
+            background-color: #f9f9fb;
+            font-size: 15px;
+            color: var(--text-color);
             outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%238e8e93" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
             background-color: #fff;
         }
-        select:disabled { background-color: #f2f2f2; cursor: not-allowed; }
-        
-        .btn-primary {
-            background-color: #007bff;
+
+        select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Main Buy Button */
+        .btn-buy {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
+            border-radius: 10px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.15);
+        }
+
+        .btn-buy:active {
+            transform: scale(0.98);
+        }
+
+        .btn-buy:disabled {
+            background-color: #c7c7cc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Active Order Box */
+        .order-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-top: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+
+        .order-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-waiting { background: #fff3cd; color: #856404; }
+        .badge-received { background: #d4edda; color: #155724; }
+        .badge-canceled { background: #f8d7da; color: #721c24; }
+
+        .phone-box {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 12px;
+            cursor: pointer;
             transition: 0.2s;
         }
-        .btn-primary:hover { background-color: #0056b3; }
-        .btn-primary:disabled { background-color: #a0cfff; cursor: not-allowed; }
 
-        .order-box {
-            background: #fff9e6;
-            border: 1px solid #ffe58f;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+        .phone-box:hover {
+            border-color: var(--primary-color);
         }
 
-        /* Copyable Elements */
-        .copyable-phone {
-            font-size: 17px;
-            color: #007bff;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #eef5ff;
-            display: inline-block;
-            user-select: all;
-        }
-        .copyable-phone:hover {
-            background: #d0e3ff;
+        .phone-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
         }
 
-        /* Multiple SMS Container */
-        .sms-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .copy-hint {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* SMS List */
+        .sms-container {
             margin-top: 10px;
         }
+
         .sms-card {
-            background: #e6f4ea;
-            border: 1px solid #b7eb8f;
+            background: #eafaf1;
+            border: 1px solid #2ecc71;
+            padding: 12px;
             border-radius: 8px;
-            padding: 10px;
             text-align: center;
+            margin-bottom: 8px;
         }
+
         .sms-code {
             font-size: 26px;
-            font-weight: bold;
-            color: #28a745;
+            font-weight: 800;
+            color: #27ae60;
             letter-spacing: 3px;
-            cursor: pointer;
-            user-select: all;
-            display: inline-block;
-            padding: 4px 12px;
-            background: #ffffff;
+            background: #fff;
+            padding: 6px 14px;
             border-radius: 6px;
-            border: 1px dashed #28a745;
-            margin-bottom: 5px;
+            display: inline-block;
+            border: 1px dashed #27ae60;
+            cursor: pointer;
+            margin-bottom: 4px;
         }
-        .sms-code:hover {
-            background: #f0fff4;
-        }
+
         .sms-text {
             font-size: 12px;
             color: #555;
-            margin-top: 4px;
             word-break: break-word;
         }
 
-        .loader { text-align: center; font-style: italic; color: #666; font-size: 13px; padding: 10px; }
-        .badge {
-            background: #007bff;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            margin-left: 5px;
+        .loader-text {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 10px 0;
         }
 
         /* Action Buttons */
-        .action-buttons {
+        .action-group {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 12px;
         }
-        .btn-cancel {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 8px;
-            flex: 1;
-        }
-        .btn-cancel:hover { background-color: #bd2130; }
 
-        .btn-change {
-            background-color: #17a2b8;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 8px;
+        .btn-action {
             flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .btn-change:hover { background-color: #117a8b; }
 
-        /* Toast Popup Notice */
+        .btn-cancel { background: #ffe5e5; color: var(--danger-color); }
+        .btn-cancel:hover { background: #ffd1d1; }
+
+        .btn-change { background: #e5f3ff; color: var(--primary-color); }
+        .btn-change:hover { background: #cce7ff; }
+
+        /* Toast Notification */
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: #fff;
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             display: none;
-            z-index: 1000;
+            z-index: 9999;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>5SIM SMS Activator</h2>
+<div class="mini-app">
+    <div class="header">
+        <h2>⚡ 5SIM SMS Activator</h2>
+    </div>
 
     <!-- Balance Card -->
-    <div class="card">
-        <span><strong>Balance:</strong></span>
-        <span id="balance-display" style="font-size: 18px; font-weight: bold; color: #28a745;">Loading...</span>
+    <div class="balance-card">
+        <div>
+            <div class="balance-title">Available Balance</div>
+            <div class="balance-amount" id="balance-display">$0.00</div>
+        </div>
+        <button onclick="fetchBalance()" style="width: auto; padding: 6px 10px; background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 6px; font-size: 12px; cursor: pointer;">🔄 Refresh</button>
     </div>
 
-    <!-- Dropdown Form -->
+    <!-- Selection Dropdowns -->
     <div class="form-group">
-        <label for="country-select">1. Select Country:</label>
+        <label>1. Country</label>
         <select id="country-select" onchange="onCountryChange()">
-            <option value="">-- Loading Countries... --</option>
+            <option value="">Loading Countries...</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label for="service-select">2. Select Service:</label>
+        <label>2. Service</label>
         <select id="service-select" disabled onchange="onServiceChange()">
-            <option value="">-- Select Country First --</option>
+            <option value="">Select Country First</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label for="operator-select">3. Select Operator:</label>
+        <label>3. Operator</label>
         <select id="operator-select" disabled>
-            <option value="">-- Select Service First --</option>
+            <option value="">Select Service First</option>
         </select>
     </div>
 
-    <button id="buy-btn" class="btn-primary" onclick="buyNumber()" disabled>Buy Virtual Number</button>
+    <button id="buy-btn" class="btn-buy" onclick="buyNumber()" disabled>Buy Virtual Number</button>
 
-    <!-- Order Details -->
-    <div id="order-section" class="order-box" style="display: none;">
-        <h3 style="margin-top:0; font-size:16px;">Active Order</h3>
-        <p style="margin:5px 0;">
-            <strong>Phone:</strong> 
-            <span id="phone-number" class="copyable-phone" onclick="copyToClipboard(this.innerText, 'Phone number copied!')">-</span>
-            <small style="color: #888; font-size: 11px;">(click to copy)</small>
-        </p>
-        <p style="margin:5px 0;"><strong>Order ID:</strong> <span id="order-id">-</span></p>
-        <p style="margin:5px 0;"><strong>Status:</strong> <span id="order-status" class="badge">WAITING</span></p>
-
-        <hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">
-        
-        <!-- All SMS Codes will be listed here -->
-        <div id="sms-container">
-            <div class="loader">Waiting for SMS code...</div>
+    <!-- Active Order Output -->
+    <div id="order-section" class="order-card" style="display: none;">
+        <div class="order-header">
+            <span class="order-title">Active Order</span>
+            <span id="order-status" class="badge badge-waiting">WAITING</span>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons" id="action-buttons">
-            <button class="btn-cancel" id="btn-cancel-id" onclick="cancelNumber()">Cancel Order</button>
-            <button class="btn-change" id="btn-change-id" onclick="changeNumber()">Change Number</button>
+        <div class="phone-box" onclick="copyToClipboard(rawPhoneNumber, 'Phone number copied!')">
+            <div class="phone-number" id="phone-number">-</div>
+            <span class="copy-hint">Tap to copy phone number</span>
+        </div>
+
+        <div style="font-size: 11px; color: #777; margin-bottom: 8px;">Order ID: <span id="order-id">-</span></div>
+
+        <!-- SMS Codes List -->
+        <div id="sms-container" class="sms-container">
+            <div class="loader-text">⏳ Waiting for SMS code...</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-group" id="action-buttons">
+            <button class="btn-action btn-cancel" onclick="cancelNumber()">Cancel Order</button>
+            <button class="btn-action btn-change" onclick="changeNumber()">Change Number</button>
         </div>
     </div>
 </div>
 
-<!-- Copy Toast Notification -->
 <div id="toast" class="toast">Copied!</div>
 
 <script>
@@ -248,6 +372,7 @@
     let currentOrderId = null;
     let pollingInterval = null;
     let rawPhoneNumber = "";
+    let pollingRetryCount = 0;
 
     const serviceIcons = {
         'telegram': '✈️', 'whatsapp': '💬', 'steam': '🎮', 'google': '🔍',
@@ -273,24 +398,19 @@
         return '📱';
     }
 
-    // Helper: Copy to Clipboard Function
-    function copyToClipboard(text, message = "Copied to clipboard!") {
+    function copyToClipboard(text, msg = "Copied!") {
         if (!text || text === "-") return;
-        
-        // Clean up text if it has extra spacing
         const cleanText = text.trim();
-
         if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(cleanText).then(() => showToast(message));
+            navigator.clipboard.writeText(cleanText).then(() => showToast(msg));
         } else {
-            // Fallback for non-https/older browsers
             const textArea = document.createElement("textarea");
             textArea.value = cleanText;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            showToast(message);
+            showToast(msg);
         }
     }
 
@@ -298,9 +418,7 @@
         const toast = document.getElementById("toast");
         toast.innerText = msg;
         toast.style.display = "block";
-        setTimeout(() => {
-            toast.style.display = "none";
-        }, 2000);
+        setTimeout(() => { toast.style.display = "none"; }, 2000);
     }
 
     async function init() {
@@ -312,7 +430,7 @@
         try {
             const res = await fetch(`${BACKEND_URL}/api/profile`, { headers });
             const data = await res.json();
-            document.getElementById("balance-display").innerText = data.balance !== undefined ? `$${parseFloat(data.balance).toFixed(4)}` : "Error";
+            document.getElementById("balance-display").innerText = data.balance !== undefined ? `$${parseFloat(data.balance).toFixed(4)}` : "$0.00";
         } catch {
             document.getElementById("balance-display").innerText = "Offline";
         }
@@ -324,7 +442,7 @@
             const res = await fetch(`${BACKEND_URL}/api/countries`, { headers });
             const countries = await res.json();
             
-            countrySelect.innerHTML = '<option value="">-- Choose a Country --</option>';
+            countrySelect.innerHTML = '<option value="">-- Choose Country --</option>';
             const sortedKeys = Object.keys(countries).sort();
             
             sortedKeys.forEach(key => {
@@ -332,7 +450,7 @@
                 const flag = countries[key].iso ? getCountryFlag(countries[key].iso) : '🌐';
                 const opt = document.createElement("option");
                 opt.value = key;
-                opt.innerText = `${flag}  ${name}`;
+                opt.innerText = `${flag} ${name}`;
                 countrySelect.appendChild(opt);
             });
         } catch (e) {
@@ -352,7 +470,7 @@
 
         if (!country) return;
 
-        serviceSelect.innerHTML = '<option value="">Loading Services & Prices...</option>';
+        serviceSelect.innerHTML = '<option value="">Loading Services...</option>';
 
         try {
             const res = await fetch(`${BACKEND_URL}/api/prices/${country}`, { headers });
@@ -369,7 +487,7 @@
                 const icon = getServiceIcon(item.service);
                 const opt = document.createElement("option");
                 opt.value = item.service;
-                opt.innerText = `${icon}  ${item.service.toUpperCase()} ($${item.price_usd} - ${item.count} pcs)`;
+                opt.innerText = `${icon} ${item.service.toUpperCase()} ($${item.price_usd} - ${item.count} pcs)`;
                 serviceSelect.appendChild(opt);
             });
 
@@ -392,12 +510,12 @@
         const serviceInfo = servicesData.find(s => s.service === selectedService);
         if (!serviceInfo) return;
 
-        operatorSelect.innerHTML = '<option value="any">📶 ANY OPERATOR (Best Chance)</option>';
+        operatorSelect.innerHTML = '<option value="any">📶 ANY OPERATOR</option>';
         serviceInfo.operators.forEach(op => {
             if (op.count > 0) {
                 const opt = document.createElement("option");
                 opt.value = op.operator;
-                opt.innerText = `📡  ${op.operator.toUpperCase()} ($${op.cost} - ${op.count} pcs)`;
+                opt.innerText = `📡 ${op.operator.toUpperCase()} ($${op.cost})`;
                 operatorSelect.appendChild(opt);
             }
         });
@@ -415,11 +533,15 @@
         document.getElementById("action-buttons").style.display = "flex";
         document.getElementById("phone-number").innerText = "Purchasing...";
         document.getElementById("order-id").innerText = "-";
-        document.getElementById("order-status").innerText = "PROCESSING";
         
-        document.getElementById("sms-container").innerHTML = '<div class="loader">Waiting for SMS code...</div>';
+        const statusBadge = document.getElementById("order-status");
+        statusBadge.innerText = "WAITING";
+        statusBadge.className = "badge badge-waiting";
+
+        document.getElementById("sms-container").innerHTML = '<div class="loader-text">⏳ Waiting for SMS code...</div>';
 
         if (pollingInterval) clearInterval(pollingInterval);
+        pollingRetryCount = 0;
 
         try {
             const res = await fetch(`${BACKEND_URL}/api/buy/${country}/${operator}/${service}`, { headers });
@@ -430,56 +552,72 @@
                 rawPhoneNumber = data.phone;
                 document.getElementById("phone-number").innerText = data.phone;
                 document.getElementById("order-id").innerText = data.id;
-                document.getElementById("order-status").innerText = data.status || "WAITING";
 
                 fetchBalance();
 
-                // Start polling every 3 seconds
+                // Start Polling with standard check
                 pollingInterval = setInterval(() => checkSMS(data.id), 3000);
             } else {
+                alert(data.error || "Failed to buy number!");
                 document.getElementById("order-section").style.display = "none";
             }
         } catch (e) {
+            alert("Network Error!");
             document.getElementById("order-section").style.display = "none";
         }
     }
 
-    // Checking for All SMS Codes (Support Multiple SMS)
     async function checkSMS(orderId) {
         try {
             const res = await fetch(`${BACKEND_URL}/api/check/${orderId}`, { headers });
             const data = await res.json();
 
-            document.getElementById("order-status").innerText = data.status || "WAITING";
+            const statusBadge = document.getElementById("order-status");
+            const currentStatus = data.status || "WAITING";
+
+            // Safeguard for TIMEOUT on initial calls
+            if (currentStatus === "TIMEOUT" && pollingRetryCount < 3) {
+                pollingRetryCount++;
+                return; // ignore early timeout glitch
+            }
+
+            statusBadge.innerText = currentStatus;
+
+            if (currentStatus === "RECEIVED" || (data.sms && data.sms.length > 0)) {
+                statusBadge.className = "badge badge-received";
+            } else if (currentStatus === "CANCELED" || currentStatus === "TIMEOUT") {
+                statusBadge.className = "badge badge-canceled";
+            } else {
+                statusBadge.className = "badge badge-waiting";
+            }
 
             if (data.sms && data.sms.length > 0) {
                 const container = document.getElementById("sms-container");
-                let listHtml = '<div class="sms-list">';
+                let listHtml = '';
 
-                // Reverse loop so newest SMS appears at the top
                 const reversedSMS = [...data.sms].reverse();
-
                 reversedSMS.forEach((smsItem, index) => {
                     const code = smsItem.code || smsItem.code_from_sms || "NO CODE";
                     const text = smsItem.text || smsItem.sender || "";
 
                     listHtml += `
                         <div class="sms-card">
-                            <small style="color:#666; font-size:11px;">SMS #${data.sms.length - index}</small><br>
-                            <div class="sms-code" onclick="copyToClipboard('${code}', 'OTP Code copied!')">
+                            <div class="sms-code" onclick="copyToClipboard('${code}', 'OTP Copied!')">
                                 ${code}
                             </div>
-                            <br><small style="color:#888; font-size:11px;">(click code to copy)</small>
+                            <div style="font-size:10px; color:#888;">Tap code to copy</div>
                             ${text ? `<div class="sms-text">${text}</div>` : ''}
                         </div>
                     `;
                 });
 
-                listHtml += '</div>';
                 container.innerHTML = listHtml;
             }
 
-            if (data.status === "FINISHED" || data.status === "CANCELED" || data.status === "TIMEOUT") {
+            if (currentStatus === "FINISHED" || currentStatus === "CANCELED" || currentStatus === "TIMEOUT") {
+                if (data.sms && data.sms.length === 0) {
+                    document.getElementById("sms-container").innerHTML = `<div class="loader-text" style="color:var(--danger-color)">Order ${currentStatus.toLowerCase()}</div>`;
+                }
                 clearInterval(pollingInterval);
             }
         } catch (e) {
@@ -489,7 +627,6 @@
 
     async function cancelNumber() {
         if (!currentOrderId) return;
-
         try {
             const res = await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             const data = await res.json();
@@ -506,11 +643,9 @@
 
     async function changeNumber() {
         if (!currentOrderId) return;
-
         try {
             await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             if (pollingInterval) clearInterval(pollingInterval);
-
             await buyNumber();
         } catch (e) {
             console.error("Change failed", e);
