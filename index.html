@@ -3,70 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Get Number - Country List UI</title>
+  <title>Dashboard - Get Number Feature</title>
   <style>
+    /* --------------------------------------------------- */
+    /* ১. গ্লোবাল ও ড্যাশবোর্ড স্টাইল (আপনার ড্যাশবোর্ড অক্ষত থাকবে) */
+    /* --------------------------------------------------- */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      background-color: #080711;
+      background-color: #06050e;
       color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ড্যাশবোর্ডের মূল কন্টেইনার */
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* ড্যাশবোর্ড হেডার */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background-color: #0d0c1d;
+      border: 1px solid #1f1b3e;
+      border-radius: 16px;
+      margin-bottom: 25px;
+    }
+
+    .brand-logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #8c52ff;
+    }
+
+    /* গেট নাম্বার বাটন (ড্যাশবোর্ডের ভিতরে থাকবে) */
+    .btn-get-number {
+      background: linear-gradient(135deg, #6322db, #4312a0);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(99, 34, 219, 0.3);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn-get-number:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 34, 219, 0.5);
+    }
+
+    /* আপনার ড্যাশবোর্ডের অন্যান্য কার্ড ও কন্টেন্ট লেআউট */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .dash-card {
+      background-color: #0d0c1d;
+      border: 1px solid #1f1b3e;
+      border-radius: 16px;
       padding: 20px;
     }
 
-    /* App Screen Card Container */
-    .app-card {
+    .dash-card h4 {
+      color: #8c88ad;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .dash-card p {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* --------------------------------------------------- */
+    /* ২. কান্ট্রি সিলেক্ট পপআপ/মোডাল স্টাইল (ছবি অনুযায়ী)   */
+    /* --------------------------------------------------- */
+    
+    /* ব্যাকগ্রাউন্ড অস্পষ্ট (Overlay) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
+      height: 100%;
+      background-color: rgba(4, 3, 10, 0.8);
+      backdrop-filter: blur(6px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    /* হাইড করার জন্য বিশেষ ক্লাস */
+    .hidden {
+      display: none !important;
+    }
+
+    /* মোডাল কার্ড ডিজাইন */
+    .modal-card {
+      width: 90%;
       max-width: 420px;
       background-color: #0d0c1d;
       border: 1px solid #1f1b3e;
       border-radius: 20px;
       padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+      position: relative;
     }
 
-    /* Primary Action Button (Get Number) */
-    .main-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #6322db, #4312a0);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .main-btn:hover {
-      background: linear-gradient(135deg, #7433ee, #5118be);
-      box-shadow: 0 0 15px rgba(99, 34, 219, 0.4);
-    }
-
-    /* Hidden State for Country Section */
-    .hidden {
-      display: none !important;
-    }
-
-    /* Section Header */
+    /* হেডার ও ক্লোজ বাটন */
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .header-left {
@@ -84,7 +155,7 @@
       align-items: center;
       justify-content: center;
       color: #7b46f6;
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .title-area h3 {
@@ -95,19 +166,41 @@
     .title-area p {
       font-size: 12px;
       color: #8c88ad;
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .sort-dropdown {
       background-color: #171233;
       border: 1px solid #2b2354;
       color: #d1ccf0;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 8px;
       font-size: 12px;
+      outline: none;
       cursor: pointer;
     }
 
-    /* Search Input Box */
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: #8c88ad;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 4px;
+    }
+
+    .close-btn:hover {
+      color: #fff;
+    }
+
+    /* সার্চ ফিল্ড */
     .search-box {
       position: relative;
       margin-bottom: 15px;
@@ -134,37 +227,37 @@
       top: 50%;
       transform: translateY(-50%);
       color: #69628a;
+      font-size: 14px;
     }
 
-    /* Country Scrollable List */
+    /* কান্ট্রি স্কোলবেল লিস্ট */
     .country-list {
-      max-height: 380px;
+      max-height: 340px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
       padding-right: 4px;
     }
 
-    /* Custom Scrollbar Styling */
     .country-list::-webkit-scrollbar {
       width: 5px;
     }
+
     .country-list::-webkit-scrollbar-thumb {
       background: #251e4b;
       border-radius: 4px;
     }
 
-    /* Individual Country Row */
+    /* কান্ট্রি আইটেম Row */
     .country-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 10px 12px;
       border-radius: 10px;
-      background-color: transparent;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background-color 0.2s;
     }
 
     .country-item:hover, .country-item.selected {
@@ -178,8 +271,8 @@
     }
 
     .flag {
-      font-size: 22px;
-      width: 32px;
+      font-size: 20px;
+      width: 28px;
       text-align: center;
     }
 
@@ -191,7 +284,7 @@
     .dial-code {
       font-size: 13px;
       color: #8c88ad;
-      margin-left: 8px;
+      margin-left: 6px;
     }
 
     .country-meta {
@@ -212,10 +305,10 @@
 
     .arrow {
       color: #69628a;
-      font-size: 14px;
+      font-size: 12px;
     }
 
-    /* Next Button at Bottom */
+    /* নেক্সট বাটন */
     .next-btn {
       width: 100%;
       padding: 14px;
@@ -231,22 +324,57 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
+      transition: background 0.3s;
+    }
+
+    .next-btn:hover {
+      background: linear-gradient(90deg, #6826ed, #4d15be);
     }
   </style>
 </head>
 <body>
 
-  <div class="app-card">
-
-    <!-- Step 1: Initial "Get Number" Button -->
-    <button id="getNumberBtn" class="main-btn">
-      Get Number ⚡
-    </button>
-
-    <!-- Step 2: Country Selection Area (Hidden initially) -->
-    <div id="countrySection" class="hidden">
+  <!-- ========================================== -->
+  <!-- ১. আপনার বর্তমান ড্যাশবোর্ড কন্টেন্ট (ঠিক থাকবে) -->
+  <!-- ========================================== -->
+  <div class="dashboard-container">
+    
+    <!-- ড্যাশবোর্ড হেডার -->
+    <header class="dashboard-header">
+      <div class="brand-logo">SMS Portal</div>
       
-      <!-- Header -->
+      <!-- আপনার গেট নাম্বার বাটন -->
+      <button id="openGetNumberBtn" class="btn-get-number">
+        Get Number ⚡
+      </button>
+    </header>
+
+    <!-- ড্যাশবোর্ডের গ্রিড/কার্ড ইত্যাদি -->
+    <main class="dashboard-grid">
+      <div class="dash-card">
+        <h4>Total Orders</h4>
+        <p>1,280</p>
+      </div>
+      <div class="dash-card">
+        <h4>Active Numbers</h4>
+        <p>12</p>
+      </div>
+      <div class="dash-card">
+        <h4>Account Balance</h4>
+        <p>$45.50</p>
+      </div>
+    </main>
+
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- ২. কান্ট্রি সিলেক্ট মোডাল পপআপ (By Default Hidden) -->
+  <!-- ========================================== -->
+  <div id="countryModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      
+      <!-- হেডার সেকশন -->
       <div class="section-header">
         <div class="header-left">
           <div class="icon-globe">🌐</div>
@@ -255,19 +383,22 @@
             <p>Choose a country to continue</p>
           </div>
         </div>
-        <select class="sort-dropdown">
-          <option>By Popularity</option>
-          <option>By Name</option>
-        </select>
+        <div class="header-right">
+          <select class="sort-dropdown">
+            <option>By Popularity</option>
+            <option>By Name</option>
+          </select>
+          <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
       </div>
 
-      <!-- Search Field -->
+      <!-- সার্চ ইনপুট -->
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Search country...">
       </div>
 
-      <!-- Country List Container -->
+      <!-- কান্ট্রি লিস্ট -->
       <div class="country-list" id="countryList">
         
         <div class="country-item" data-name="United States">
@@ -342,6 +473,42 @@
           </div>
         </div>
 
+        <div class="country-item" data-name="Canada">
+          <div class="country-info">
+            <span class="flag">🇨🇦</span>
+            <span class="country-name">Canada</span>
+            <span class="dial-code">+1</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">54 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-item" data-name="Brazil">
+          <div class="country-info">
+            <span class="flag">🇧🇷</span>
+            <span class="country-name">Brazil</span>
+            <span class="dial-code">+55</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">63 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-item" data-name="Pakistan">
+          <div class="country-info">
+            <span class="flag">🇵🇰</span>
+            <span class="country-name">Pakistan</span>
+            <span class="dial-code">+92</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">48 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
         <div class="country-item" data-name="Bangladesh">
           <div class="country-info">
             <span class="flag">🇧🇩</span>
@@ -356,33 +523,47 @@
 
       </div>
 
-      <!-- Bottom Next Button -->
+      <!-- নেক্সট বাটন -->
       <button class="next-btn" id="nextBtn">
         Next ❯
       </button>
 
     </div>
-
   </div>
 
+  <!-- ========================================== -->
+  <!-- ৩. JavaScript লজিক                           -->
+  <!-- ========================================== -->
   <script>
-    const getNumberBtn = document.getElementById('getNumberBtn');
-    const countrySection = document.getElementById('countrySection');
+    const openGetNumberBtn = document.getElementById('openGetNumberBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const countryModal = document.getElementById('countryModal');
     const searchInput = document.getElementById('searchInput');
     const countryItems = document.querySelectorAll('.country-item');
 
-    // 1. Link "Get Number" button to display Country List
-    getNumberBtn.addEventListener('click', () => {
-      getNumberBtn.classList.add('hidden'); // Hide "Get Number" button
-      countrySection.classList.remove('hidden'); // Show Country Selection UI
+    // ১. "Get Number" এ ক্লিক করলে পপআপ শো করবে (ড্যাশবোর্ড ব্যাকগ্রাউন্ডে থাকবে)
+    openGetNumberBtn.addEventListener('click', () => {
+      countryModal.classList.remove('hidden');
     });
 
-    // 2. Real-time Search functionality
+    // ২. 'X' এ ক্লিক করলে পপআপ হাইড হয়ে যাবে
+    closeModalBtn.addEventListener('click', () => {
+      countryModal.classList.add('hidden');
+    });
+
+    // ৩. পপআপের বাইরের ব্যাকগ্রাউন্ডে ক্লিক করলেও পপআপ হাইড হবে
+    countryModal.addEventListener('click', (e) => {
+      if (e.target === countryModal) {
+        countryModal.classList.add('hidden');
+      }
+    });
+
+    // ৪. লাইভ সার্চ ফিল্টার
     searchInput.addEventListener('input', (e) => {
       const filter = e.target.value.toLowerCase();
       countryItems.forEach(item => {
-        const name = item.getAttribute('data-name').toLowerCase();
-        if (name.includes(filter)) {
+        const countryName = item.getAttribute('data-name').toLowerCase();
+        if (countryName.includes(filter)) {
           item.style.display = 'flex';
         } else {
           item.style.display = 'none';
@@ -390,7 +571,7 @@
       });
     });
 
-    // 3. Selection visual highlight
+    // ৫. কান্ট্রি সিলেক্ট ব্যাকগ্রাউন্ড হাইলাইট
     countryItems.forEach(item => {
       item.addEventListener('click', () => {
         countryItems.forEach(i => i.classList.remove('selected'));
@@ -398,5 +579,6 @@
       });
     });
   </script>
+
 </body>
 </html>
