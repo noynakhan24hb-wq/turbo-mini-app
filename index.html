@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5SIM Virtual Number Hub</title>
+    <title>5SIM SMS Activator</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -85,7 +85,7 @@
             margin-left: 5px;
         }
 
-        /* Action Buttons Grid */
+        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -161,7 +161,7 @@
         <hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">
         <div id="sms-container" class="loader">Waiting for SMS code...</div>
 
-        <!-- Action Buttons (Cancel & Change) -->
+        <!-- Action Buttons -->
         <div class="action-buttons" id="action-buttons">
             <button class="btn-cancel" id="btn-cancel-id" onclick="cancelNumber()">Cancel Order</button>
             <button class="btn-change" id="btn-change-id" onclick="changeNumber()">Change Number</button>
@@ -307,11 +307,9 @@
 
                 pollingInterval = setInterval(() => checkSMS(data.id), 4000);
             } else {
-                alert("Purchase failed: " + (data.error || "No stock or low balance"));
                 document.getElementById("order-section").style.display = "none";
             }
         } catch (e) {
-            alert("Connection error!");
             document.getElementById("order-section").style.display = "none";
         }
     }
@@ -329,7 +327,6 @@
                 smsBox.className = "sms-code";
                 smsBox.innerText = `${latestSMS.code}`;
                 
-                // SMS চলে আসলে ক্যানসেল বাটন হাইড করে দেওয়া ভালো
                 document.getElementById("action-buttons").style.display = "none";
                 clearInterval(pollingInterval);
             } else if (data.status === "FINISHED" || data.status === "CANCELED") {
@@ -341,44 +338,37 @@
         }
     }
 
-    // 🔴 Cancel Current Order
+    // 🔴 1-Click Cancel (No Browser Dialog/Alert Popup)
     async function cancelNumber() {
         if (!currentOrderId) return;
-        
-        if (!confirm("Are you sure you want to cancel this order?")) return;
 
         try {
             const res = await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             const data = await res.json();
 
             if (data.status === "CANCELED" || data.id) {
-                alert("Order canceled successfully!");
                 if (pollingInterval) clearInterval(pollingInterval);
                 document.getElementById("order-section").style.display = "none";
                 fetchBalance();
-            } else {
-                alert("Cannot cancel order: " + (data.error || "Time limit exceeded or already used"));
             }
         } catch (e) {
-            alert("Failed to cancel order.");
+            console.error("Cancel failed", e);
         }
     }
 
-    // 🔄 Change Number (Cancel + Re-buy)
+    // 🔄 1-Click Change Number (No Browser Dialog/Alert Popup)
     async function changeNumber() {
         if (!currentOrderId) return;
 
-        if (!confirm("Cancel this number and request a new one?")) return;
-
         try {
-            // First cancel existing number
+            // Cancel current number first
             await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             if (pollingInterval) clearInterval(pollingInterval);
 
-            // Re-buy new number
+            // Re-buy new number instantly
             await buyNumber();
         } catch (e) {
-            alert("Error while changing number.");
+            console.error("Change failed", e);
         }
     }
 
