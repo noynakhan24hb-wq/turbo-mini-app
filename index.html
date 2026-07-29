@@ -6,40 +6,43 @@
     <title>5SIM Virtual Number Hub</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f6f9;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             color: #333;
         }
         .container {
-            max-width: 600px;
+            max-width: 480px;
             margin: 0 auto;
             background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        h2 { text-align: center; color: #007bff; margin-bottom: 20px; }
+        h2 { text-align: center; color: #007bff; margin-top: 0; font-size: 22px; }
         .card {
             background: #eef5ff;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, button {
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #444; }
+        select, button {
             width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #dcdfe6;
             box-sizing: border-box;
             font-size: 14px;
+            outline: none;
+            background-color: #fff;
         }
+        select:disabled { background-color: #f2f2f2; cursor: not-allowed; }
         button {
             background-color: #007bff;
             color: white;
@@ -47,24 +50,38 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 10px;
+            font-size: 16px;
+            transition: 0.2s;
         }
         button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #a0cfff; cursor: not-allowed; }
         .order-box {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
+            background: #fff9e6;
+            border: 1px solid #ffe58f;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-top: 20px;
         }
         .sms-code {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
             color: #28a745;
             text-align: center;
             letter-spacing: 2px;
             margin-top: 10px;
+            background: #e6f4ea;
+            padding: 10px;
+            border-radius: 8px;
         }
-        .loader { text-align: center; font-style: italic; color: #666; }
+        .loader { text-align: center; font-style: italic; color: #666; font-size: 13px; }
+        .badge {
+            background: #007bff;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -72,82 +89,169 @@
 <div class="container">
     <h2>5SIM SMS Activator</h2>
 
-    <!-- 1. Balance Section -->
+    <!-- Balance Card -->
     <div class="card">
-        <span><strong>Account Balance:</strong></span>
+        <span><strong>Balance:</strong></span>
         <span id="balance-display" style="font-size: 18px; font-weight: bold; color: #28a745;">Loading...</span>
     </div>
 
-    <!-- 2. Purchase Form -->
+    <!-- Dropdown Form -->
     <div class="form-group">
-        <label for="country">Country:</label>
-        <input type="text" id="country" value="russia" placeholder="e.g. russia, england, usa">
+        <label for="country-select">1. Select Country:</label>
+        <select id="country-select" onchange="onCountryChange()">
+            <option value="">-- Loading Countries... --</option>
+        </select>
     </div>
 
     <div class="form-group">
-        <label for="operator">Operator:</label>
-        <input type="text" id="operator" value="any" placeholder="e.g. any, megafon, tele2">
+        <label for="service-select">2. Select Service:</label>
+        <select id="service-select" disabled onchange="onServiceChange()">
+            <option value="">-- Select Country First --</option>
+        </select>
     </div>
 
     <div class="form-group">
-        <label for="service">Service:</label>
-        <input type="text" id="service" value="telegram" placeholder="e.g. telegram, whatsapp, steam">
+        <label for="operator-select">3. Select Operator:</label>
+        <select id="operator-select" disabled>
+            <option value="">-- Select Service First --</option>
+        </select>
     </div>
 
-    <button onclick="buyNumber()">Buy Virtual Number</button>
+    <button id="buy-btn" onclick="buyNumber()" disabled>Buy Virtual Number</button>
 
-    <!-- 3. Active Order & SMS Panel -->
+    <!-- Order Details -->
     <div id="order-section" class="order-box" style="display: none;">
-        <h3>Active Number</h3>
-        <p><strong>Phone Number:</strong> <span id="phone-number">-</span></p>
-        <p><strong>Order ID:</strong> <span id="order-id">-</span></p>
-        <p><strong>Status:</strong> <span id="order-status">PENDING</span></p>
+        <h3 style="margin-top:0; font-size:16px;">Active Order</h3>
+        <p style="margin:5px 0;"><strong>Phone:</strong> <span id="phone-number" style="font-size:16px; color:#007bff;">-</span></p>
+        <p style="margin:5px 0;"><strong>Order ID:</strong> <span id="order-id">-</span></p>
+        <p style="margin:5px 0;"><strong>Status:</strong> <span id="order-status" class="badge">WAITING</span></p>
 
-        <hr>
-        <h4>Received SMS:</h4>
-        <div id="sms-container" class="loader">Waiting for SMS code...</div>
+        <hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">
+        <div id="sms-container" class="loader">Waiting for SMS...</div>
     </div>
 </div>
 
 <script>
-    // 🔗 আপনার Ngrok Backend URL এখানে আপডেট করুন
+    // 🔗 আপনার Ngrok Backend URL
     const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev";
 
-    // Ngrok Warning Bypass এর জন্য সাধারণ Headers
-    const customHeaders = {
-        "ngrok-skip-browser-warning": "69420",
-        "Content-Type": "application/json"
-    };
-
+    const headers = { "ngrok-skip-browser-warning": "69420" };
+    let servicesData = [];
     let pollingInterval = null;
 
-    // 1. Fetch & Display Balance
-    async function loadBalance() {
+    // 1. Initialize Page Data
+    async function init() {
+        fetchBalance();
+        fetchCountries();
+    }
+
+    // Fetch Balance
+    async function fetchBalance() {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/profile`, { headers: customHeaders });
-            const data = await response.json();
-            
-            if (data.balance !== undefined) {
-                document.getElementById("balance-display").innerText = `$${data.balance.toFixed(4)}`;
-            } else {
-                document.getElementById("balance-display").innerText = "Error";
-            }
-        } catch (error) {
-            console.error("Balance fetch error:", error);
-            document.getElementById("balance-display").innerText = "Connection Failed";
+            const res = await fetch(`${BACKEND_URL}/api/profile`, { headers });
+            const data = await res.json();
+            document.getElementById("balance-display").innerText = data.balance !== undefined ? `$${parseFloat(data.balance).toFixed(4)}` : "Error";
+        } catch {
+            document.getElementById("balance-display").innerText = "Offline";
         }
     }
 
-    // 2. Buy Number Function
-    async function buyNumber() {
-        const country = document.getElementById("country").value.trim().toLowerCase();
-        const operator = document.getElementById("operator").value.trim().toLowerCase();
-        const service = document.getElementById("service").value.trim().toLowerCase();
-
-        if (!country || !operator || !service) {
-            alert("Please fill in all fields!");
-            return;
+    // Fetch Countries Dropdown
+    async function fetchCountries() {
+        const countrySelect = document.getElementById("country-select");
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/countries`, { headers });
+            const countries = await res.json();
+            
+            countrySelect.innerHTML = '<option value="">-- Choose a Country --</option>';
+            
+            // Sort countries alphabetically
+            const sortedKeys = Object.keys(countries).sort();
+            
+            sortedKeys.forEach(key => {
+                const name = countries[key].text || key;
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.innerText = name;
+                countrySelect.appendChild(opt);
+            });
+        } catch (e) {
+            countrySelect.innerHTML = '<option value="">Failed to load countries</option>';
         }
+    }
+
+    // When Country Selected -> Load Services
+    async function onCountryChange() {
+        const country = document.getElementById("country-select").value;
+        const serviceSelect = document.getElementById("service-select");
+        const operatorSelect = document.getElementById("operator-select");
+        const buyBtn = document.getElementById("buy-btn");
+
+        serviceSelect.disabled = true;
+        operatorSelect.disabled = true;
+        buyBtn.disabled = true;
+
+        if (!country) return;
+
+        serviceSelect.innerHTML = '<option value="">Loading Services & Prices...</option>';
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/prices/${country}`, { headers });
+            const data = await res.json();
+            servicesData = data.services || [];
+
+            if (servicesData.length === 0) {
+                serviceSelect.innerHTML = '<option value="">No services available</option>';
+                return;
+            }
+
+            serviceSelect.innerHTML = '<option value="">-- Choose Service --</option>';
+            servicesData.forEach(item => {
+                const opt = document.createElement("option");
+                opt.value = item.service;
+                opt.innerText = `${item.service.toUpperCase()} ($${item.price_usd} - ${item.count} pcs)`;
+                serviceSelect.appendChild(opt);
+            });
+
+            serviceSelect.disabled = false;
+        } catch {
+            serviceSelect.innerHTML = '<option value="">Error loading services</option>';
+        }
+    }
+
+    // When Service Selected -> Load Operators
+    function onServiceChange() {
+        const selectedService = document.getElementById("service-select").value;
+        const operatorSelect = document.getElementById("operator-select");
+        const buyBtn = document.getElementById("buy-btn");
+
+        operatorSelect.disabled = true;
+        buyBtn.disabled = true;
+
+        if (!selectedService) return;
+
+        const serviceInfo = servicesData.find(s => s.service === selectedService);
+        if (!serviceInfo) return;
+
+        operatorSelect.innerHTML = '<option value="any">ANY OPERATOR (Best Chance)</option>';
+        serviceInfo.operators.forEach(op => {
+            if (op.count > 0) {
+                const opt = document.createElement("option");
+                opt.value = op.operator;
+                opt.innerText = `${op.operator.toUpperCase()} ($${op.cost} - ${op.count} pcs)`;
+                operatorSelect.appendChild(opt);
+            }
+        });
+
+        operatorSelect.disabled = false;
+        buyBtn.disabled = false;
+    }
+
+    // Buy Number
+    async function buyNumber() {
+        const country = document.getElementById("country-select").value;
+        const service = document.getElementById("service-select").value;
+        const operator = document.getElementById("operator-select").value || "any";
 
         document.getElementById("order-section").style.display = "block";
         document.getElementById("phone-number").innerText = "Purchasing...";
@@ -156,64 +260,54 @@
         document.getElementById("sms-container").className = "loader";
         document.getElementById("sms-container").innerText = "Waiting for SMS code...";
 
-        // আগের কোনো চেকিং বন্ধ করা
         if (pollingInterval) clearInterval(pollingInterval);
 
         try {
-            const response = await fetch(`${BACKEND_URL}/api/buy/${country}/${operator}/${service}`, { headers: customHeaders });
-            const data = await response.json();
+            const res = await fetch(`${BACKEND_URL}/api/buy/${country}/${operator}/${service}`, { headers });
+            const data = await res.json();
 
             if (data.id && data.phone) {
                 document.getElementById("phone-number").innerText = data.phone;
                 document.getElementById("order-id").innerText = data.id;
-                document.getElementById("order-status").innerText = data.status || "WAITING FOR SMS";
+                document.getElementById("order-status").innerText = data.status || "WAITING";
 
-                // ব্যালেন্স আপডেট করা
-                loadBalance();
+                fetchBalance(); // Refresh balance
 
-                // প্রতি ৫ সেকেন্ড পর পর SMS চেক চালু করা
-                pollingInterval = setInterval(() => {
-                    checkSMS(data.id);
-                }, 5000);
-
+                // Auto Check SMS
+                pollingInterval = setInterval(() => checkSMS(data.id), 4000);
             } else {
-                alert("Failed to buy number: " + (data.error || JSON.stringify(data)));
+                alert("Purchase failed: " + (data.error || "No stock or low balance"));
                 document.getElementById("order-section").style.display = "none";
             }
-        } catch (error) {
-            console.error("Buy number error:", error);
-            alert("Error connecting to backend server.");
+        } catch (e) {
+            alert("Connection error!");
             document.getElementById("order-section").style.display = "none";
         }
     }
 
-    // 3. Auto Check SMS Status Function
+    // Check SMS Status
     async function checkSMS(orderId) {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/check/${orderId}`, { headers: customHeaders });
-            const data = await response.json();
+            const res = await fetch(`${BACKEND_URL}/api/check/${orderId}`, { headers });
+            const data = await res.json();
 
             document.getElementById("order-status").innerText = data.status || "WAITING";
 
-            // SMS রিসিভ হলে
             if (data.sms && data.sms.length > 0) {
                 const latestSMS = data.sms[data.sms.length - 1];
-                const smsContainer = document.getElementById("sms-container");
-                smsContainer.className = "sms-code";
-                smsContainer.innerText = `Code: ${latestSMS.code} (Full SMS: ${latestSMS.text})`;
-
-                // SMS পেয়ে গেলে অটো-চেক থামানো
+                const smsBox = document.getElementById("sms-container");
+                smsBox.className = "sms-code";
+                smsBox.innerText = `${latestSMS.code}`;
                 clearInterval(pollingInterval);
             } else if (data.status === "FINISHED" || data.status === "CANCELED") {
                 clearInterval(pollingInterval);
             }
-        } catch (error) {
-            console.error("SMS check error:", error);
+        } catch (e) {
+            console.error(e);
         }
     }
 
-    // পেজ লোড হওয়ার সাথে সাথে ব্যালেন্স লোড হবে
-    window.onload = loadBalance;
+    window.onload = init;
 </script>
 
 </body>
