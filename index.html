@@ -65,14 +65,14 @@
             margin-top: 20px;
         }
         .sms-code {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #28a745;
             text-align: center;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             margin-top: 10px;
             background: #e6f4ea;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
         }
         .loader { text-align: center; font-style: italic; color: #666; font-size: 13px; }
@@ -85,7 +85,7 @@
             margin-left: 5px;
         }
 
-        /* Action Buttons */
+        /* Action Buttons Grid */
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -97,11 +97,25 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
-            padding: 10px;
+            padding: 11px;
             border-radius: 8px;
             flex: 1;
+            font-size: 14px;
         }
         .btn-cancel:hover { background-color: #bd2130; }
+
+        .btn-finish {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 11px;
+            border-radius: 8px;
+            flex: 1;
+            font-size: 14px;
+        }
+        .btn-finish:hover { background-color: #218838; }
 
         .btn-change {
             background-color: #17a2b8;
@@ -109,9 +123,10 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
-            padding: 10px;
+            padding: 11px;
             border-radius: 8px;
             flex: 1;
+            font-size: 14px;
         }
         .btn-change:hover { background-color: #117a8b; }
     </style>
@@ -163,8 +178,8 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons" id="action-buttons">
-            <button class="btn-cancel" id="btn-cancel-id" onclick="cancelNumber()">Cancel Order</button>
-            <button class="btn-change" id="btn-change-id" onclick="changeNumber()">Change Number</button>
+            <button class="btn-cancel" id="btn-left" onclick="handleLeftButton()">Cancel Order</button>
+            <button class="btn-change" id="btn-right" onclick="changeNumber()">Change Number</button>
         </div>
     </div>
 </div>
@@ -176,55 +191,26 @@
     let servicesData = [];
     let currentOrderId = null;
     let pollingInterval = null;
+    let isSmsReceived = false;
 
-    // Service to Icon Mapping
     const serviceIcons = {
-        'telegram': '✈️',
-        'whatsapp': '💬',
-        'steam': '🎮',
-        'google': '🔍',
-        'youtube': '▶️',
-        'facebook': '📘',
-        'instagram': '📷',
-        'twitter': '🐦',
-        'x': '🐦',
-        'tiktok': '🎵',
-        'discord': '👾',
-        'openai': '🤖',
-        'chatgpt': '🤖',
-        'netflix': '🎬',
-        'amazon': '🛒',
-        'apple': '🍏',
-        'microsoft': '🪟',
-        'uber': '🚗',
-        'tinder': '🔥',
-        'binance': '🟡',
-        'vk': '🔵',
-        'line': '🟢',
-        'viber': '💜',
-        'blizzard': '❄️',
-        'epicgames': '🕹️'
+        'telegram': '✈️', 'whatsapp': '💬', 'steam': '🎮', 'google': '🔍',
+        'youtube': '▶️', 'facebook': '📘', 'instagram': '📷', 'twitter': '🐦',
+        'tiktok': '🎵', 'discord': '👾', 'openai': '🤖', 'chatgpt': '🤖'
     };
 
-    // Country Code to Flag Emoji Generator
     function getCountryFlag(countryCode) {
         if (!countryCode || countryCode.length !== 2) return '🌐';
-        const codePoints = countryCode
-            .toUpperCase()
-            .split('')
-            .map(char => 127397 + char.charCodeAt());
+        const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt());
         return String.fromCodePoint(...codePoints);
     }
 
-    // Helper to get service icon
     function getServiceIcon(serviceName) {
         const name = serviceName.toLowerCase();
         for (const key in serviceIcons) {
-            if (name.includes(key)) {
-                return serviceIcons[key];
-            }
+            if (name.includes(key)) return serviceIcons[key];
         }
-        return '📱'; // Default icon
+        return '📱';
     }
 
     async function init() {
@@ -335,8 +321,10 @@
         const service = document.getElementById("service-select").value;
         const operator = document.getElementById("operator-select").value || "any";
 
+        isSmsReceived = false;
+        resetLeftButtonToCancel();
+
         document.getElementById("order-section").style.display = "block";
-        document.getElementById("action-buttons").style.display = "flex";
         document.getElementById("phone-number").innerText = "Purchasing...";
         document.getElementById("order-id").innerText = "-";
         document.getElementById("order-status").innerText = "PROCESSING";
@@ -379,10 +367,13 @@
                 smsBox.className = "sms-code";
                 smsBox.innerText = `${latestSMS.code}`;
                 
-                document.getElementById("action-buttons").style.display = "none";
+                // OTP আসার পর বাটন চেঞ্জ হয়ে Finish Order হবে
+                if (!isSmsReceived) {
+                    isSmsReceived = true;
+                    setLeftButtonToFinish();
+                }
                 clearInterval(pollingInterval);
             } else if (data.status === "FINISHED" || data.status === "CANCELED") {
-                document.getElementById("action-buttons").style.display = "none";
                 clearInterval(pollingInterval);
             }
         } catch (e) {
@@ -390,13 +381,32 @@
         }
     }
 
+    function resetLeftButtonToCancel() {
+        const btn = document.getElementById("btn-left");
+        btn.innerText = "Cancel Order";
+        btn.className = "btn-cancel";
+    }
+
+    function setLeftButtonToFinish() {
+        const btn = document.getElementById("btn-left");
+        btn.innerText = "Finish Order";
+        btn.className = "btn-finish";
+    }
+
+    function handleLeftButton() {
+        if (isSmsReceived) {
+            finishNumber();
+        } else {
+            cancelNumber();
+        }
+    }
+
+    // Cancel Order
     async function cancelNumber() {
         if (!currentOrderId) return;
-
         try {
             const res = await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             const data = await res.json();
-
             if (data.status === "CANCELED" || data.id) {
                 if (pollingInterval) clearInterval(pollingInterval);
                 document.getElementById("order-section").style.display = "none";
@@ -407,13 +417,29 @@
         }
     }
 
+    // Finish Order
+    async function finishNumber() {
+        if (!currentOrderId) return;
+        try {
+            await fetch(`${BACKEND_URL}/api/finish/${currentOrderId}`, { headers });
+            if (pollingInterval) clearInterval(pollingInterval);
+            document.getElementById("order-section").style.display = "none";
+            fetchBalance();
+        } catch (e) {
+            console.error("Finish failed", e);
+        }
+    }
+
+    // Change Number (Cancel/Finish + Re-buy)
     async function changeNumber() {
         if (!currentOrderId) return;
-
         try {
-            await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
+            if (isSmsReceived) {
+                await fetch(`${BACKEND_URL}/api/finish/${currentOrderId}`, { headers });
+            } else {
+                await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
+            }
             if (pollingInterval) clearInterval(pollingInterval);
-
             await buyNumber();
         } catch (e) {
             console.error("Change failed", e);
