@@ -1,584 +1,882 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Get Number Feature</title>
+  <title>5SIM Mini App</title>
+  <!-- Lucide Icons Vector Integration -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* --------------------------------------------------- */
-    /* ১. গ্লোবাল ও ড্যাশবোর্ড স্টাইল (আপনার ড্যাশবোর্ড অক্ষত থাকবে) */
-    /* --------------------------------------------------- */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
 
     body {
-      background-color: #06050e;
+      background-color: #03040a;
       color: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ড্যাশবোর্ডের মূল কন্টেইনার */
-    .dashboard-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      width: 100%;
-      flex: 1;
-    }
-
-    /* ড্যাশবোর্ড হেডার */
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 20px;
-      background-color: #0d0c1d;
-      border: 1px solid #1f1b3e;
-      border-radius: 16px;
-      margin-bottom: 25px;
-    }
-
-    .brand-logo {
-      font-size: 20px;
-      font-weight: bold;
-      color: #8c52ff;
-    }
-
-    /* গেট নাম্বার বাটন (ড্যাশবোর্ডের ভিতরে থাকবে) */
-    .btn-get-number {
-      background: linear-gradient(135deg, #6322db, #4312a0);
-      color: #ffffff;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(99, 34, 219, 0.3);
-      transition: all 0.2s ease-in-out;
-    }
-
-    .btn-get-number:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 34, 219, 0.5);
-    }
-
-    /* আপনার ড্যাশবোর্ডের অন্যান্য কার্ড ও কন্টেন্ট লেআউট */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .dash-card {
-      background-color: #0d0c1d;
-      border: 1px solid #1f1b3e;
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .dash-card h4 {
-      color: #8c88ad;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    .dash-card p {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    /* --------------------------------------------------- */
-    /* ২. কান্ট্রি সিলেক্ট পপআপ/মোডাল স্টাইল (ছবি অনুযায়ী)   */
-    /* --------------------------------------------------- */
-    
-    /* ব্যাকগ্রাউন্ড অস্পষ্ট (Overlay) */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(4, 3, 10, 0.8);
-      backdrop-filter: blur(6px);
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
-      opacity: 1;
-      transition: opacity 0.3s ease;
+      min-height: 100vh;
+      padding: 10px;
     }
 
-    /* হাইড করার জন্য বিশেষ ক্লাস */
+    /* App Container Mockup */
+    .app-container {
+      width: 100%;
+      max-width: 410px;
+      height: 840px;
+      background-color: #060814;
+      border: 1px solid #1a1e36;
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px 10px;
+    }
+
+    .menu-icon {
+      cursor: pointer;
+      color: #ffffff;
+    }
+
+    .app-title {
+      text-align: center;
+    }
+
+    .app-title h2 {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #00d2ff, #9b51e0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    .app-title span {
+      font-size: 10px;
+      color: #9b51e0;
+      letter-spacing: 2px;
+      font-weight: 700;
+      display: block;
+      margin-top: -3px;
+    }
+
+    .profile-avatar {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #2b3a67;
+      overflow: hidden;
+      border: 1px solid #3d4f8a;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .status-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #00e676;
+      border-radius: 50%;
+      border: 2px solid #060814;
+    }
+
+    /* Main Content Area */
+    .content-area {
+      flex: 1;
+      padding: 10px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .content-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Dashboard Cards */
+    .balance-card {
+      background: linear-gradient(135deg, rgba(8, 25, 54, 0.8), rgba(13, 17, 38, 0.9));
+      border: 1px solid #1a2a54;
+      border-radius: 20px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(0, 162, 255, 0.05);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: #00a2ff;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .balance-amount {
+      font-size: 34px;
+      font-weight: 800;
+      color: #00d2ff;
+      margin-bottom: 15px;
+    }
+
+    .balance-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .id-tag {
+      font-size: 12px;
+      color: #6a79a5;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-add-balance {
+      background: rgba(0, 162, 255, 0.08);
+      border: 1px solid #0055a5;
+      color: #00a2ff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .wallet-illustration {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      width: 75px;
+      opacity: 0.85;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #0a0d21;
+      border: 1px solid #181d3d;
+      border-radius: 20px;
+      padding: 16px 8px;
+      text-align: center;
+    }
+
+    .metric-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .metric-box:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 10%;
+      height: 80%;
+      width: 1px;
+      background: #181d3d;
+    }
+
+    .metric-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .icon-otp { background: rgba(0, 230, 118, 0.1); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.2); }
+    .icon-cost { background: rgba(255, 171, 0, 0.1); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2); }
+    .icon-repeat { background: rgba(155, 81, 224, 0.1); color: #9b51e0; border: 1px solid rgba(155, 81, 224, 0.2); }
+
+    .metric-label {
+      font-size: 10px;
+      color: #8c9ba5;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .metric-value.green { color: #00e676; }
+    .metric-value.yellow { color: #ffab00; }
+    .metric-value.purple { color: #b066ff; }
+
+    .view-details {
+      font-size: 10px;
+      color: #5d6b98;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+    }
+
+    /* Action Cards */
+    .action-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .action-card {
+      background: #0a0d21;
+      border: 1px solid #181d3d;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 140px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-card:hover {
+      border-color: #3b2885;
+      transform: translateY(-2px);
+    }
+
+    .card-top-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .get-num-icon { background: rgba(0, 162, 255, 0.12); color: #00a2ff; border: 1px solid rgba(0, 162, 255, 0.3); }
+    .active-ord-icon { background: rgba(123, 70, 246, 0.12); color: #7b46f6; border: 1px solid rgba(123, 70, 246, 0.3); }
+
+    .action-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .action-card p {
+      font-size: 10px;
+      color: #6a79a5;
+      line-height: 1.3;
+    }
+
+    .arrow-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #141836;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00a2ff;
+      margin-top: 10px;
+      align-self: flex-end;
+    }
+
+    .purple-arrow { color: #a272ff; }
+
+    /* =================================================== */
+    /* Select Country Layout (Image 2 Replica)             */
+    /* =================================================== */
     .hidden {
       display: none !important;
     }
 
-    /* মোডাল কার্ড ডিজাইন */
-    .modal-card {
-      width: 90%;
-      max-width: 420px;
-      background-color: #0d0c1d;
-      border: 1px solid #1f1b3e;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-      position: relative;
-    }
-
-    /* হেডার ও ক্লোজ বাটন */
-    .section-header {
+    .country-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .icon-globe {
-      width: 40px;
-      height: 40px;
-      background-color: #1c154c;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #7b46f6;
-      font-size: 18px;
-    }
-
-    .title-area h3 {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .title-area p {
-      font-size: 12px;
-      color: #8c88ad;
-      margin-top: 2px;
-    }
-
-    .header-right {
+    .header-title-box {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .sort-dropdown {
-      background-color: #171233;
-      border: 1px solid #2b2354;
-      color: #d1ccf0;
+    .globe-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: #171638;
+      border: 1px solid #282454;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7b46f6;
+    }
+
+    .header-text h3 {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .header-text p {
+      font-size: 11px;
+      color: #73789a;
+    }
+
+    .sort-btn {
+      background-color: #111126;
+      border: 1px solid #222244;
+      color: #a4a9d6;
       padding: 6px 10px;
       border-radius: 8px;
-      font-size: 12px;
-      outline: none;
-      cursor: pointer;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .close-btn {
-      background: transparent;
-      border: none;
-      color: #8c88ad;
-      font-size: 22px;
-      cursor: pointer;
-      line-height: 1;
-      padding: 0 4px;
-    }
-
-    .close-btn:hover {
-      color: #fff;
-    }
-
-    /* সার্চ ফিল্ড */
-    .search-box {
+    .search-input-wrapper {
       position: relative;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
-    .search-box input {
+    .search-input-wrapper input {
       width: 100%;
-      padding: 12px 16px 12px 42px;
-      background-color: #120e29;
-      border: 1px solid #32256a;
+      padding: 12px 14px 12px 38px;
+      background-color: #0b0c1e;
+      border: 1px solid #231d4d;
       border-radius: 12px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
     }
 
-    .search-box input::placeholder {
-      color: #69628a;
+    .search-input-wrapper input::placeholder {
+      color: #55587b;
     }
 
-    .search-icon {
+    .search-icon-inside {
       position: absolute;
-      left: 14px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #69628a;
-      font-size: 14px;
+      color: #55587b;
     }
 
-    /* কান্ট্রি স্কোলবেল লিস্ট */
-    .country-list {
-      max-height: 340px;
+    /* Scrollable Full List */
+    .country-full-scroll {
+      flex: 1;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      padding-right: 4px;
+      padding-right: 2px;
     }
 
-    .country-list::-webkit-scrollbar {
-      width: 5px;
+    .country-full-scroll::-webkit-scrollbar {
+      width: 4px;
     }
 
-    .country-list::-webkit-scrollbar-thumb {
-      background: #251e4b;
+    .country-full-scroll::-webkit-scrollbar-thumb {
+      background: #1f1b40;
       border-radius: 4px;
     }
 
-    /* কান্ট্রি আইটেম Row */
-    .country-item {
+    .country-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 10px 12px;
       border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background 0.2s;
     }
 
-    .country-item:hover, .country-item.selected {
-      background-color: #181238;
+    .country-row:hover {
+      background-color: #12102b;
     }
 
-    .country-info {
+    .country-left {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .flag {
+    .country-flag {
       font-size: 20px;
-      width: 28px;
+      width: 26px;
       text-align: center;
     }
 
-    .country-name {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .dial-code {
+    .country-name-txt {
       font-size: 13px;
-      color: #8c88ad;
-      margin-left: 6px;
+      font-weight: 600;
     }
 
-    .country-meta {
+    .country-code-txt {
+      font-size: 12px;
+      color: #60658a;
+      margin-left: 8px;
+    }
+
+    .country-right {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .service-badge {
-      background-color: #1c1543;
-      color: #a272ff;
-      border: 1px solid #2d2263;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 500;
+    .services-tag {
+      background-color: #141133;
+      color: #8c5dff;
+      border: 1px solid #2b1f5e;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
     }
 
-    .arrow {
-      color: #69628a;
+    .row-arrow {
+      color: #4a4d6e;
       font-size: 12px;
     }
 
-    /* নেক্সট বাটন */
-    .next-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(90deg, #571cd8, #4210a5);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 15px;
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 65px;
+      background-color: #060814;
+      border-top: 1px solid #141833;
       display: flex;
-      justify-content: center;
+      justify-content: space-around;
       align-items: center;
-      gap: 8px;
-      transition: background 0.3s;
+      padding: 0 10px;
     }
 
-    .next-btn:hover {
-      background: linear-gradient(90deg, #6826ed, #4d15be);
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #555b80;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #00a2ff;
+    }
+
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      width: 24px;
+      height: 2px;
+      background-color: #00a2ff;
+      border-radius: 2px;
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -4px;
+      right: 2px;
+      background-color: #ff3366;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 10px;
+    }
+
+    .sub-label {
+      font-size: 8px;
+      color: #414666;
+      margin-top: -2px;
     }
   </style>
 </head>
 <body>
 
-  <!-- ========================================== -->
-  <!-- ১. আপনার বর্তমান ড্যাশবোর্ড কন্টেন্ট (ঠিক থাকবে) -->
-  <!-- ========================================== -->
-  <div class="dashboard-container">
+  <div class="app-container">
     
-    <!-- ড্যাশবোর্ড হেডার -->
-    <header class="dashboard-header">
-      <div class="brand-logo">SMS Portal</div>
+    <!-- Top Bar Header -->
+    <div class="top-bar">
+      <div class="menu-icon" id="backOrMenuBtn">
+        <i data-lucide="menu"></i>
+      </div>
+      <div class="app-title">
+        <h2>5SIM</h2>
+        <span>MINI APP</span>
+      </div>
+      <div class="profile-avatar">
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=5sim" alt="User Avatar">
+        <div class="status-dot"></div>
+      </div>
+    </div>
+
+    <!-- 1. DASHBOARD VIEW -->
+    <div class="content-area" id="dashboardView">
       
-      <!-- আপনার গেট নাম্বার বাটন -->
-      <button id="openGetNumberBtn" class="btn-get-number">
-        Get Number ⚡
-      </button>
-    </header>
-
-    <!-- ড্যাশবোর্ডের গ্রিড/কার্ড ইত্যাদি -->
-    <main class="dashboard-grid">
-      <div class="dash-card">
-        <h4>Total Orders</h4>
-        <p>1,280</p>
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="card-subtitle">1. YOUR BALANCE</div>
+        <div class="balance-amount">$ 12.45</div>
+        <div class="balance-footer">
+          <div class="id-tag">
+            ID: 1234567890 <i data-lucide="copy" size="12"></i>
+          </div>
+          <button class="btn-add-balance">
+            <i data-lucide="plus" size="14"></i> Add Balance
+          </button>
+        </div>
       </div>
-      <div class="dash-card">
-        <h4>Active Numbers</h4>
-        <p>12</p>
+
+      <!-- Today's Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-icon icon-otp">
+            <i data-lucide="message-square" size="18"></i>
+          </div>
+          <span class="metric-label">TODAY OTP</span>
+          <span class="metric-value green">36</span>
+          <div class="view-details">View Details <i data-lucide="chevron-right" size="10"></i></div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-icon icon-cost">
+            <i data-lucide="dollar-sign" size="18"></i>
+          </div>
+          <span class="metric-label">TODAY COST</span>
+          <span class="metric-value yellow">$4.12</span>
+          <div class="view-details">View Details <i data-lucide="chevron-right" size="10"></i></div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-icon icon-repeat">
+            <i data-lucide="rotate-cw" size="18"></i>
+          </div>
+          <span class="metric-label">TOTAL REPEAT OTP</span>
+          <span class="metric-value purple">12</span>
+          <div class="view-details">View Details <i data-lucide="chevron-right" size="10"></i></div>
+        </div>
       </div>
-      <div class="dash-card">
-        <h4>Account Balance</h4>
-        <p>$45.50</p>
+
+      <!-- Action Cards -->
+      <div class="action-cards">
+        
+        <!-- Get Number Button Card -->
+        <div class="action-card" id="getBtnCard">
+          <div>
+            <div class="card-top-icon get-num-icon">
+              <i data-lucide="cpu" size="22"></i>
+            </div>
+            <h4>GET NUMBER</h4>
+            <p>Get a new number from any service</p>
+          </div>
+          <div class="arrow-btn">
+            <i data-lucide="chevron-right" size="16"></i>
+          </div>
+        </div>
+
+        <!-- Active Order Card -->
+        <div class="action-card">
+          <div>
+            <div class="card-top-icon active-ord-icon">
+              <i data-lucide="clipboard-list" size="22"></i>
+            </div>
+            <h4>ACTIVE ORDER</h4>
+            <p>View your active orders</p>
+          </div>
+          <div class="arrow-btn purple-arrow">
+            <i data-lucide="chevron-right" size="16"></i>
+          </div>
+        </div>
+
       </div>
-    </main>
 
-  </div>
+    </div>
 
-
-  <!-- ========================================== -->
-  <!-- ২. কান্ট্রি সিলেক্ট মোডাল পপআপ (By Default Hidden) -->
-  <!-- ========================================== -->
-  <div id="countryModal" class="modal-overlay hidden">
-    <div class="modal-card">
+    <!-- 2. SELECT COUNTRY VIEW (Without Next Button, Full Scroll) -->
+    <div class="content-area hidden" id="countryView">
       
-      <!-- হেডার সেকশন -->
-      <div class="section-header">
-        <div class="header-left">
-          <div class="icon-globe">🌐</div>
-          <div class="title-area">
+      <!-- Section Header -->
+      <div class="country-header">
+        <div class="header-title-box">
+          <div class="globe-badge">
+            <i data-lucide="globe" size="20"></i>
+          </div>
+          <div class="header-text">
             <h3>2. Select Country</h3>
             <p>Choose a country to continue</p>
           </div>
         </div>
-        <div class="header-right">
-          <select class="sort-dropdown">
-            <option>By Popularity</option>
-            <option>By Name</option>
-          </select>
-          <button id="closeModalBtn" class="close-btn">&times;</button>
+        <div class="sort-btn">
+          <i data-lucide="sliders-horizontal" size="12"></i> By Popularity <i data-lucide="chevron-down" size="12"></i>
         </div>
       </div>
 
-      <!-- সার্চ ইনপুট -->
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search country...">
+      <!-- Search Input -->
+      <div class="search-input-wrapper">
+        <i data-lucide="search" size="16" class="search-icon-inside"></i>
+        <input type="text" id="countrySearch" placeholder="Search country...">
       </div>
 
-      <!-- কান্ট্রি লিস্ট -->
-      <div class="country-list" id="countryList">
+      <!-- Country List Area (Scrolls infinitely for all countries) -->
+      <div class="country-full-scroll" id="countryList">
         
-        <div class="country-item" data-name="United States">
-          <div class="country-info">
-            <span class="flag">🇺🇸</span>
-            <span class="country-name">United States</span>
-            <span class="dial-code">+1</span>
+        <div class="country-row" data-name="United States">
+          <div class="country-left">
+            <span class="country-flag">🇺🇸</span>
+            <span class="country-name-txt">United States</span>
+            <span class="country-code-txt">+1</span>
           </div>
-          <div class="country-meta">
-            <span class="service-badge">152 Services</span>
-            <span class="arrow">❯</span>
-          </div>
-        </div>
-
-        <div class="country-item" data-name="United Kingdom">
-          <div class="country-info">
-            <span class="flag">🇬🇧</span>
-            <span class="country-name">United Kingdom</span>
-            <span class="dial-code">+44</span>
-          </div>
-          <div class="country-meta">
-            <span class="service-badge">98 Services</span>
-            <span class="arrow">❯</span>
+          <div class="country-right">
+            <span class="services-tag">152 Services</span>
+            <span class="row-arrow">❯</span>
           </div>
         </div>
 
-        <div class="country-item" data-name="India">
-          <div class="country-info">
-            <span class="flag">🇮🇳</span>
-            <span class="country-name">India</span>
-            <span class="dial-code">+91</span>
+        <div class="country-row" data-name="United Kingdom">
+          <div class="country-left">
+            <span class="country-flag">🇬🇧</span>
+            <span class="country-name-txt">United Kingdom</span>
+            <span class="country-code-txt">+44</span>
           </div>
-          <div class="country-meta">
-            <span class="service-badge">121 Services</span>
-            <span class="arrow">❯</span>
-          </div>
-        </div>
-
-        <div class="country-item" data-name="Indonesia">
-          <div class="country-info">
-            <span class="flag">🇮🇩</span>
-            <span class="country-name">Indonesia</span>
-            <span class="dial-code">+62</span>
-          </div>
-          <div class="country-meta">
-            <span class="service-badge">87 Services</span>
-            <span class="arrow">❯</span>
+          <div class="country-right">
+            <span class="services-tag">98 Services</span>
+            <span class="row-arrow">❯</span>
           </div>
         </div>
 
-        <div class="country-item" data-name="Germany">
-          <div class="country-info">
-            <span class="flag">🇩🇪</span>
-            <span class="country-name">Germany</span>
-            <span class="dial-code">+49</span>
+        <div class="country-row" data-name="India">
+          <div class="country-left">
+            <span class="country-flag">🇮🇳</span>
+            <span class="country-name-txt">India</span>
+            <span class="country-code-txt">+91</span>
           </div>
-          <div class="country-meta">
-            <span class="service-badge">76 Services</span>
-            <span class="arrow">❯</span>
-          </div>
-        </div>
-
-        <div class="country-item" data-name="France">
-          <div class="country-info">
-            <span class="flag">🇫🇷</span>
-            <span class="country-name">France</span>
-            <span class="dial-code">+33</span>
-          </div>
-          <div class="country-meta">
-            <span class="service-badge">95 Services</span>
-            <span class="arrow">❯</span>
+          <div class="country-right">
+            <span class="services-tag">121 Services</span>
+            <span class="row-arrow">❯</span>
           </div>
         </div>
 
-        <div class="country-item" data-name="Canada">
-          <div class="country-info">
-            <span class="flag">🇨🇦</span>
-            <span class="country-name">Canada</span>
-            <span class="dial-code">+1</span>
+        <div class="country-row" data-name="Indonesia">
+          <div class="country-left">
+            <span class="country-flag">🇮🇩</span>
+            <span class="country-name-txt">Indonesia</span>
+            <span class="country-code-txt">+62</span>
           </div>
-          <div class="country-meta">
-            <span class="service-badge">54 Services</span>
-            <span class="arrow">❯</span>
-          </div>
-        </div>
-
-        <div class="country-item" data-name="Brazil">
-          <div class="country-info">
-            <span class="flag">🇧🇷</span>
-            <span class="country-name">Brazil</span>
-            <span class="dial-code">+55</span>
-          </div>
-          <div class="country-meta">
-            <span class="service-badge">63 Services</span>
-            <span class="arrow">❯</span>
+          <div class="country-right">
+            <span class="services-tag">87 Services</span>
+            <span class="row-arrow">❯</span>
           </div>
         </div>
 
-        <div class="country-item" data-name="Pakistan">
-          <div class="country-info">
-            <span class="flag">🇵🇰</span>
-            <span class="country-name">Pakistan</span>
-            <span class="dial-code">+92</span>
+        <div class="country-row" data-name="Germany">
+          <div class="country-left">
+            <span class="country-flag">🇩🇪</span>
+            <span class="country-name-txt">Germany</span>
+            <span class="country-code-txt">+49</span>
           </div>
-          <div class="country-meta">
-            <span class="service-badge">48 Services</span>
-            <span class="arrow">❯</span>
+          <div class="country-right">
+            <span class="services-tag">76 Services</span>
+            <span class="row-arrow">❯</span>
           </div>
         </div>
 
-        <div class="country-item" data-name="Bangladesh">
-          <div class="country-info">
-            <span class="flag">🇧🇩</span>
-            <span class="country-name">Bangladesh</span>
-            <span class="dial-code">+880</span>
+        <div class="country-row" data-name="France">
+          <div class="country-left">
+            <span class="country-flag">🇫🇷</span>
+            <span class="country-name-txt">France</span>
+            <span class="country-code-txt">+33</span>
           </div>
-          <div class="country-meta">
-            <span class="service-badge">46 Services</span>
-            <span class="arrow">❯</span>
+          <div class="country-right">
+            <span class="services-tag">95 Services</span>
+            <span class="row-arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-row" data-name="Canada">
+          <div class="country-left">
+            <span class="country-flag">🇨🇦</span>
+            <span class="country-name-txt">Canada</span>
+            <span class="country-code-txt">+1</span>
+          </div>
+          <div class="country-right">
+            <span class="services-tag">54 Services</span>
+            <span class="row-arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-row" data-name="Brazil">
+          <div class="country-left">
+            <span class="country-flag">🇧🇷</span>
+            <span class="country-name-txt">Brazil</span>
+            <span class="country-code-txt">+55</span>
+          </div>
+          <div class="country-right">
+            <span class="services-tag">63 Services</span>
+            <span class="row-arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-row" data-name="Pakistan">
+          <div class="country-left">
+            <span class="country-flag">🇵🇰</span>
+            <span class="country-name-txt">Pakistan</span>
+            <span class="country-code-txt">+92</span>
+          </div>
+          <div class="country-right">
+            <span class="services-tag">48 Services</span>
+            <span class="row-arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-row" data-name="Bangladesh">
+          <div class="country-left">
+            <span class="country-flag">🇧🇩</span>
+            <span class="country-name-txt">Bangladesh</span>
+            <span class="country-code-txt">+880</span>
+          </div>
+          <div class="country-right">
+            <span class="services-tag">46 Services</span>
+            <span class="row-arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-row" data-name="Vietnam">
+          <div class="country-left">
+            <span class="country-flag">🇻🇳</span>
+            <span class="country-name-txt">Vietnam</span>
+            <span class="country-code-txt">+84</span>
+          </div>
+          <div class="country-right">
+            <span class="services-tag">42 Services</span>
+            <span class="row-arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-row" data-name="Philippines">
+          <div class="country-left">
+            <span class="country-flag">🇵🇭</span>
+            <span class="country-name-txt">Philippines</span>
+            <span class="country-code-txt">+63</span>
+          </div>
+          <div class="country-right">
+            <span class="services-tag">39 Services</span>
+            <span class="row-arrow">❯</span>
           </div>
         </div>
 
       </div>
-
-      <!-- নেক্সট বাটন -->
-      <button class="next-btn" id="nextBtn">
-        Next ❯
-      </button>
 
     </div>
+
+    <!-- Bottom Navigation Component -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" id="navHome">
+        <i data-lucide="home" size="20"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <span class="badge-count">36</span>
+        <i data-lucide="mail" size="20"></i>
+        <span>Inbox</span>
+        <span class="sub-label">( Total OTP Messages )</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="user" size="20"></i>
+        <span>Profile</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="clipboard" size="20"></i>
+        <span>Orders</span>
+      </div>
+    </nav>
+
   </div>
 
-  <!-- ========================================== -->
-  <!-- ৩. JavaScript লজিক                           -->
-  <!-- ========================================== -->
   <script>
-    const openGetNumberBtn = document.getElementById('openGetNumberBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const countryModal = document.getElementById('countryModal');
-    const searchInput = document.getElementById('searchInput');
-    const countryItems = document.querySelectorAll('.country-item');
+    // Initialize Lucide Icons
+    lucide.createIcons();
 
-    // ১. "Get Number" এ ক্লিক করলে পপআপ শো করবে (ড্যাশবোর্ড ব্যাকগ্রাউন্ডে থাকবে)
-    openGetNumberBtn.addEventListener('click', () => {
-      countryModal.classList.remove('hidden');
+    // DOM Elements
+    const getBtnCard = document.getElementById('getBtnCard');
+    const dashboardView = document.getElementById('dashboardView');
+    const countryView = document.getElementById('countryView');
+    const backOrMenuBtn = document.getElementById('backOrMenuBtn');
+    const navHome = document.getElementById('navHome');
+    const countrySearch = document.getElementById('countrySearch');
+    const countryRows = document.querySelectorAll('.country-row');
+
+    // Open Country View when clicking "GET NUMBER"
+    getBtnCard.addEventListener('click', () => {
+      dashboardView.classList.add('hidden');
+      countryView.classList.remove('hidden');
+      
+      // Change top left icon to Back arrow
+      backOrMenuBtn.innerHTML = `<i data-lucide="arrow-left"></i>`;
+      lucide.createIcons();
     });
 
-    // ২. 'X' এ ক্লিক করলে পপআপ হাইড হয়ে যাবে
-    closeModalBtn.addEventListener('click', () => {
-      countryModal.classList.add('hidden');
-    });
+    // Return to Dashboard View
+    function showDashboard() {
+      countryView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      
+      // Revert top left icon to Menu
+      backOrMenuBtn.innerHTML = `<i data-lucide="menu"></i>`;
+      lucide.createIcons();
+    }
 
-    // ৩. পপআপের বাইরের ব্যাকগ্রাউন্ডে ক্লিক করলেও পপআপ হাইড হবে
-    countryModal.addEventListener('click', (e) => {
-      if (e.target === countryModal) {
-        countryModal.classList.add('hidden');
+    backOrMenuBtn.addEventListener('click', () => {
+      if (!countryView.classList.contains('hidden')) {
+        showDashboard();
       }
     });
 
-    // ৪. লাইভ সার্চ ফিল্টার
-    searchInput.addEventListener('input', (e) => {
-      const filter = e.target.value.toLowerCase();
-      countryItems.forEach(item => {
-        const countryName = item.getAttribute('data-name').toLowerCase();
-        if (countryName.includes(filter)) {
-          item.style.display = 'flex';
-        } else {
-          item.style.display = 'none';
-        }
-      });
-    });
+    navHome.addEventListener('click', showDashboard);
 
-    // ৫. কান্ট্রি সিলেক্ট ব্যাকগ্রাউন্ড হাইলাইট
-    countryItems.forEach(item => {
-      item.addEventListener('click', () => {
-        countryItems.forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
+    // Live Country Search Filter
+    countrySearch.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      countryRows.forEach(row => {
+        const name = row.getAttribute('data-name').toLowerCase();
+        row.style.display = name.includes(term) ? 'flex' : 'none';
       });
     });
   </script>
-
 </body>
 </html>
