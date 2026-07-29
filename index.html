@@ -1,883 +1,402 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>5SIM MINI APP</title>
-    <!-- Flag Icons CSS for dynamic flag rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
-    <style>
-        :root {
-            --bg-color: #060913;
-            --card-bg: rgba(13, 22, 45, 0.7);
-            --card-border: rgba(0, 140, 255, 0.25);
-            --purple-border: rgba(147, 51, 234, 0.4);
-            --primary-blue: #00d2ff;
-            --neon-blue: #0088ff;
-            --neon-purple: #9d4edd;
-            --neon-green: #00ff88;
-            --neon-gold: #ffb703;
-            --purple-btn: linear-gradient(135deg, #6366f1, #a855f7);
-            --text-main: #ffffff;
-            --text-muted: #8a99ad;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Number - Country List UI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+    body {
+      background-color: #080711;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(0, 136, 255, 0.15), transparent 70%),
-                radial-gradient(circle at 100% 100%, rgba(157, 78, 221, 0.1), transparent 50%);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding-bottom: 90px;
-        }
+    /* App Screen Card Container */
+    .app-card {
+      width: 100%;
+      max-width: 420px;
+      background-color: #0d0c1d;
+      border: 1px solid #1f1b3e;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
 
-        .container {
-            width: 100%;
-            max-width: 440px;
-            padding: 16px;
-        }
+    /* Primary Action Button (Get Number) */
+    .main-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6322db, #4312a0);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
 
-        /* Page View Switcher Controls */
-        .page-view {
-            display: none;
-        }
+    .main-btn:hover {
+      background: linear-gradient(135deg, #7433ee, #5118be);
+      box-shadow: 0 0 15px rgba(99, 34, 219, 0.4);
+    }
 
-        .page-view.active {
-            display: block;
-        }
+    /* Hidden State for Country Section */
+    .hidden {
+      display: none !important;
+    }
 
-        /* Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0 20px 0;
-        }
+    /* Section Header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
 
-        .menu-btn {
-            background: none;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-        }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .brand-logo {
-            text-align: center;
-        }
+    .icon-globe {
+      width: 40px;
+      height: 40px;
+      background-color: #1c154c;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7b46f6;
+      font-size: 20px;
+    }
 
-        .brand-logo h1 {
-            font-size: 26px;
-            font-weight: 900;
-            font-style: italic;
-            background: linear-gradient(135deg, #00ffff, #0088ff, #a100ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-            line-height: 1;
-        }
+    .title-area h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
 
-        .brand-logo span {
-            font-size: 11px;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 3px;
-            display: block;
-            margin-top: 2px;
-        }
+    .title-area p {
+      font-size: 12px;
+      color: #8c88ad;
+    }
 
-        .profile-avatar {
-            position: relative;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #1e293b;
-            border: 2px solid var(--primary-blue);
-        }
+    .sort-dropdown {
+      background-color: #171233;
+      border: 1px solid #2b2354;
+      color: #d1ccf0;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
 
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+    /* Search Input Box */
+    .search-box {
+      position: relative;
+      margin-bottom: 15px;
+    }
 
-        .online-dot {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 10px;
-            height: 10px;
-            background-color: var(--neon-green);
-            border: 2px solid var(--bg-color);
-            border-radius: 50%;
-        }
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      background-color: #120e29;
+      border: 1px solid #32256a;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
 
-        /* DASHBOARD (PAGE 1) STYLES */
-        .balance-card {
-            background: linear-gradient(135deg, rgba(8, 26, 60, 0.8), rgba(6, 15, 38, 0.9));
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 136, 255, 0.15);
-            margin-bottom: 16px;
-        }
+    .search-box input::placeholder {
+      color: #69628a;
+    }
 
-        .balance-title {
-            font-size: 12px;
-            color: var(--primary-blue);
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #69628a;
+    }
 
-        .balance-amount {
-            font-size: 38px;
-            font-weight: 800;
-            color: var(--primary-blue);
-            margin-bottom: 12px;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
-        }
+    /* Country Scrollable List */
+    .country-list {
+      max-height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
 
-        .id-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+    /* Custom Scrollbar Styling */
+    .country-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    .country-list::-webkit-scrollbar-thumb {
+      background: #251e4b;
+      border-radius: 4px;
+    }
 
-        .copy-icon {
-            cursor: pointer;
-            width: 14px;
-            height: 14px;
-            stroke: var(--text-muted);
-        }
+    /* Individual Country Row */
+    .country-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background-color: transparent;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-        .wallet-graphic {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 90px;
-            height: 90px;
-            opacity: 0.85;
-            pointer-events: none;
-        }
+    .country-item:hover, .country-item.selected {
+      background-color: #181238;
+    }
 
-        .btn-add-balance {
-            position: absolute;
-            bottom: 18px;
-            right: 18px;
-            background: rgba(0, 136, 255, 0.15);
-            border: 1px solid var(--primary-blue);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
+    .country-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 18px 8px;
-            margin-bottom: 16px;
-            backdrop-filter: blur(10px);
-        }
+    .flag {
+      font-size: 22px;
+      width: 32px;
+      text-align: center;
+    }
 
-        .stat-col {
-            text-align: center;
-            position: relative;
-            padding: 0 4px;
-        }
+    .country-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
 
-        .stat-col:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 10%;
-            height: 80%;
-            width: 1px;
-            background: rgba(255, 255, 255, 0.08);
-        }
+    .dial-code {
+      font-size: 13px;
+      color: #8c88ad;
+      margin-left: 8px;
+    }
 
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            margin: 0 auto 10px auto;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .country-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .icon-otp { background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); color: var(--neon-green); }
-        .icon-cost { background: rgba(255, 183, 3, 0.1); border: 1px solid rgba(255, 183, 3, 0.3); color: var(--neon-gold); }
-        .icon-repeat { background: rgba(157, 78, 221, 0.1); border: 1px solid rgba(157, 78, 221, 0.3); color: var(--neon-purple); }
+    .service-badge {
+      background-color: #1c1543;
+      color: #a272ff;
+      border: 1px solid #2d2263;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+    }
 
-        .stat-label { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
-        .stat-value { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-        .val-otp { color: var(--neon-green); }
-        .val-cost { color: var(--neon-gold); }
-        .val-repeat { color: var(--neon-purple); }
+    .arrow {
+      color: #69628a;
+      font-size: 14px;
+    }
 
-        .view-details { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 2px; cursor: pointer; }
-
-        .action-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .action-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 130px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-        }
-
-        .card-active-order { border-color: rgba(157, 78, 221, 0.4); background: linear-gradient(135deg, rgba(20, 10, 40, 0.7), rgba(10, 15, 35, 0.8)); }
-        .action-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-        .icon-sim { background: rgba(0, 136, 255, 0.15); border: 1px solid rgba(0, 136, 255, 0.4); color: var(--primary-blue); }
-        .icon-clipboard { background: rgba(157, 78, 221, 0.15); border: 1px solid rgba(157, 78, 221, 0.4); color: var(--neon-purple); }
-        .action-card-body h3 { font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
-        .action-card-body p { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
-        .arrow-btn { position: absolute; bottom: 14px; right: 14px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .arrow-blue { background: #0076ff; color: #fff; }
-        .arrow-purple { background: #8b2fc9; color: #fff; }
-
-        /* SELECT COUNTRY (PAGE 2) STYLES */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-        }
-
-        .header-title-text h2 {
-            font-size: 18px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .header-title-text p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .filter-dropdown {
-            background: rgba(23, 20, 50, 0.8);
-            border: 1px solid var(--purple-border);
-            border-radius: 12px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #c084fc;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .search-box {
-            position: relative;
-            margin-bottom: 16px;
-        }
-
-        .search-box input {
-            width: 100%;
-            background: rgba(13, 16, 38, 0.8);
-            border: 1px solid var(--purple-border);
-            border-radius: 14px;
-            padding: 14px 16px 14px 44px;
-            font-size: 14px;
-            color: #fff;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            border-color: #a855f7;
-            box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
-        }
-
-        .search-box input::placeholder {
-            color: #52527a;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-        }
-
-        /* Country List Container */
-        .country-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 4px;
-            margin-bottom: 20px;
-        }
-
-        .country-list::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .country-list::-webkit-scrollbar-thumb {
-            background: rgba(168, 85, 247, 0.3);
-            border-radius: 10px;
-        }
-
-        .country-item {
-            background: rgba(13, 20, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 12px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .country-item:hover, .country-item.selected {
-            background: rgba(28, 33, 70, 0.8);
-            border-color: rgba(168, 85, 247, 0.5);
-            transform: translateY(-1px);
-        }
-
-        .country-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .flag-box {
-            width: 32px;
-            height: 22px;
-            border-radius: 4px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .flag-box span {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-        }
-
-        .country-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .country-code {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-left: 8px;
-        }
-
-        .country-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .services-badge {
-            background: rgba(126, 34, 206, 0.2);
-            color: #c084fc;
-            border: 1px solid rgba(168, 85, 247, 0.25);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 8px;
-        }
-
-        .chevron-icon {
-            color: #6b7280;
-        }
-
-        /* Next Button */
-        .btn-next {
-            width: 100%;
-            background: linear-gradient(90deg, #6366f1, #9333ea);
-            border: none;
-            color: #fff;
-            padding: 15px;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
-            transition: all 0.2s;
-        }
-
-        .btn-next:active {
-            transform: scale(0.98);
-        }
-
-        /* Bottom Navigation Bar */
-        .bottom-nav {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 24px);
-            max-width: 416px;
-            background: rgba(8, 15, 30, 0.95);
-            border: 1px solid rgba(0, 140, 255, 0.25);
-            border-radius: 20px;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            backdrop-filter: blur(16px);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 11px;
-            position: relative;
-            width: 25%;
-            cursor: pointer;
-        }
-
-        .nav-item.active {
-            color: var(--primary-blue);
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            width: 24px;
-            height: 3px;
-            background: var(--primary-blue);
-            border-radius: 3px;
-            box-shadow: 0 0 8px var(--primary-blue);
-        }
-
-        .nav-icon { width: 22px; height: 22px; }
-
-        .badge-count {
-            position: absolute;
-            top: -4px;
-            right: 22%;
-            background: #ff2a5f;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 2px 5px;
-            border-radius: 10px;
-            border: 2px solid var(--bg-color);
-        }
-
-        .sub-text { font-size: 8px; color: var(--text-muted); margin-top: -2px; }
-
-        /* Toast Popup Notice */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 210, 255, 0.9);
-            color: #000;
-            font-weight: bold;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: none;
-            z-index: 9999;
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
-        }
-    </style>
+    /* Next Button at Bottom */
+    .next-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(90deg, #571cd8, #4210a5);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Top Header -->
-    <div class="top-bar">
-        <button class="menu-btn" onclick="showDashboard()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-        </button>
+  <div class="app-card">
 
-        <div class="brand-logo" onclick="showDashboard()" style="cursor: pointer;">
-            <h1>5SIM</h1>
-            <span>MINI APP</span>
+    <!-- Step 1: Initial "Get Number" Button -->
+    <button id="getNumberBtn" class="main-btn">
+      Get Number ⚡
+    </button>
+
+    <!-- Step 2: Country Selection Area (Hidden initially) -->
+    <div id="countrySection" class="hidden">
+      
+      <!-- Header -->
+      <div class="section-header">
+        <div class="header-left">
+          <div class="icon-globe">🌐</div>
+          <div class="title-area">
+            <h3>2. Select Country</h3>
+            <p>Choose a country to continue</p>
+          </div>
+        </div>
+        <select class="sort-dropdown">
+          <option>By Popularity</option>
+          <option>By Name</option>
+        </select>
+      </div>
+
+      <!-- Search Field -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search country...">
+      </div>
+
+      <!-- Country List Container -->
+      <div class="country-list" id="countryList">
+        
+        <div class="country-item" data-name="United States">
+          <div class="country-info">
+            <span class="flag">🇺🇸</span>
+            <span class="country-name">United States</span>
+            <span class="dial-code">+1</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">152 Services</span>
+            <span class="arrow">❯</span>
+          </div>
         </div>
 
-        <div class="profile-avatar">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=5simApp" alt="User Avatar">
-            <div class="online-dot"></div>
+        <div class="country-item" data-name="United Kingdom">
+          <div class="country-info">
+            <span class="flag">🇬🇧</span>
+            <span class="country-name">United Kingdom</span>
+            <span class="dial-code">+44</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">98 Services</span>
+            <span class="arrow">❯</span>
+          </div>
         </div>
+
+        <div class="country-item" data-name="India">
+          <div class="country-info">
+            <span class="flag">🇮🇳</span>
+            <span class="country-name">India</span>
+            <span class="dial-code">+91</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">121 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-item" data-name="Indonesia">
+          <div class="country-info">
+            <span class="flag">🇮🇩</span>
+            <span class="country-name">Indonesia</span>
+            <span class="dial-code">+62</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">87 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-item" data-name="Germany">
+          <div class="country-info">
+            <span class="flag">🇩🇪</span>
+            <span class="country-name">Germany</span>
+            <span class="dial-code">+49</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">76 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-item" data-name="France">
+          <div class="country-info">
+            <span class="flag">🇫🇷</span>
+            <span class="country-name">France</span>
+            <span class="dial-code">+33</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">95 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+        <div class="country-item" data-name="Bangladesh">
+          <div class="country-info">
+            <span class="flag">🇧🇩</span>
+            <span class="country-name">Bangladesh</span>
+            <span class="dial-code">+880</span>
+          </div>
+          <div class="country-meta">
+            <span class="service-badge">46 Services</span>
+            <span class="arrow">❯</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Next Button -->
+      <button class="next-btn" id="nextBtn">
+        Next ❯
+      </button>
+
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 1: MAIN DASHBOARD PAGE               -->
-    <!-- ========================================== -->
-    <div id="view-dashboard" class="page-view active">
-        <!-- Balance Card -->
-        <div class="balance-card">
-            <div class="balance-title">1. YOUR BALANCE</div>
-            <div class="balance-amount" id="balance-display">$ 12.45</div>
+  </div>
 
-            <div class="id-row">
-                <span>ID: <span id="user-id">1234567890</span></span>
-                <svg class="copy-icon" onclick="copyToClipboard('1234567890', 'ID Copied!')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-            </div>
+  <script>
+    const getNumberBtn = document.getElementById('getNumberBtn');
+    const countrySection = document.getElementById('countrySection');
+    const searchInput = document.getElementById('searchInput');
+    const countryItems = document.querySelectorAll('.country-item');
 
-            <svg class="wallet-graphic" viewBox="0 0 100 100" fill="none">
-                <path d="M20 35C20 29.4772 24.4772 25 30 25H80C85.5228 25 90 29.4772 90 35V75C90 80.5228 85.5228 85 80 85H30C24.4772 85 20 80.5228 20 75V35Z" fill="url(#paint0_linear)" stroke="#0088ff" stroke-width="2"/>
-                <path d="M65 50C65 44.4772 69.4772 40 75 40H90V65H75C69.4772 65 65 60.5228 65 55V50Z" fill="#060f26" stroke="#00d2ff" stroke-width="2"/>
-                <circle cx="77.5" cy="52.5" r="4.5" fill="#00d2ff"/>
-                <defs>
-                    <linearGradient id="paint0_linear" x1="20" y1="25" x2="90" y2="85" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#0055ff" stop-opacity="0.8"/>
-                        <stop offset="1" stop-color="#050b1a" stop-opacity="0.9"/>
-                    </linearGradient>
-                </defs>
-            </svg>
+    // 1. Link "Get Number" button to display Country List
+    getNumberBtn.addEventListener('click', () => {
+      getNumberBtn.classList.add('hidden'); // Hide "Get Number" button
+      countrySection.classList.remove('hidden'); // Show Country Selection UI
+    });
 
-            <button class="btn-add-balance" onclick="showToast('Opening Add Balance...')">
-                <span>+</span> Add Balance
-            </button>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats-grid">
-            <div class="stat-col">
-                <div class="stat-icon icon-otp">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                </div>
-                <div class="stat-label">TODAY OTP</div>
-                <div class="stat-value val-otp" id="today-otp">36</div>
-                <div class="view-details" onclick="showToast('Viewing OTP Details')">
-                    View Details <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>
-            </div>
-
-            <div class="stat-col">
-                <div class="stat-icon icon-cost">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                </div>
-                <div class="stat-label">TODAY COST</div>
-                <div class="stat-value val-cost" id="today-cost">$4.12</div>
-                <div class="view-details" onclick="showToast('Viewing Cost Details')">
-                    View Details <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>
-            </div>
-
-            <div class="stat-col">
-                <div class="stat-icon icon-repeat">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                </div>
-                <div class="stat-label">TOTAL REPEAT OTP</div>
-                <div class="stat-value val-repeat" id="repeat-otp">12</div>
-                <div class="view-details" onclick="showToast('Viewing Repeat Details')">
-                    View Details <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Cards -->
-        <div class="action-cards">
-            <div class="action-card card-get-number" onclick="showSelectCountry()">
-                <div class="action-card-header">
-                    <div class="action-icon icon-sim">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="3" ry="3"></rect><line x1="8" y1="6" x2="12" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="16" y2="14"></line></svg>
-                    </div>
-                </div>
-                <div class="action-card-body">
-                    <h3>GET NUMBER</h3>
-                    <p>Get a new number<br>from any service</p>
-                </div>
-                <div class="arrow-btn arrow-blue">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>
-            </div>
-
-            <div class="action-card card-active-order" onclick="showToast('Active Orders Loaded')">
-                <div class="action-card-header">
-                    <div class="action-icon icon-clipboard">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><circle cx="9" cy="11" r="1" fill="currentColor"></circle><line x1="13" y1="11" x2="17" y2="11" stroke-width="2"></line><circle cx="9" cy="16" r="1" fill="currentColor"></circle><line x1="13" y1="16" x2="17" y2="16" stroke-width="2"></line></svg>
-                    </div>
-                </div>
-                <div class="action-card-body">
-                    <h3>ACTIVE ORDER</h3>
-                    <p>View your<br>active orders</p>
-                </div>
-                <div class="arrow-btn arrow-purple">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- VIEW 2: SELECT COUNTRY PAGE               -->
-    <!-- ========================================== -->
-    <div id="view-select-country" class="page-view">
-        <div class="page-header">
-            <div class="header-left">
-                <div class="header-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                </div>
-                <div class="header-title-text">
-                    <h2>2. Select Country</h2>
-                    <p>Choose a country to continue</p>
-                </div>
-            </div>
-
-            <div class="filter-dropdown" onclick="toggleSort()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 6h18M6 12h12M9 18h6"></path>
-                </svg>
-                <span>By Popularity</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-        </div>
-
-        <!-- Search Country Bar -->
-        <div class="search-box">
-            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="country-search" placeholder="Search country..." oninput="filterCountries()">
-        </div>
-
-        <!-- Dynamic Country List Container (IDs preserved for API data binding) -->
-        <div class="country-list" id="country-list-container">
-            <!-- Dynamically populated via JS or API -->
-        </div>
-
-        <!-- Next Action Button -->
-        <button class="btn-next" onclick="proceedNextStep()">
-            <span>Next</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
-    </div>
-
-</div>
-
-<!-- Bottom Navigation Bar -->
-<div class="bottom-nav">
-    <a class="nav-item active" onclick="showDashboard()">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-        </svg>
-        <span>Home</span>
-    </a>
-
-    <a class="nav-item" onclick="showToast('Navigated to Inbox')">
-        <span class="badge-count" id="inbox-badge">36</span>
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-            <polyline points="22,6 12,13 2,6"></polyline>
-        </svg>
-        <span>Inbox</span>
-        <span class="sub-text">( Total OTP Message )</span>
-    </a>
-
-    <a class="nav-item" onclick="showToast('Navigated to Profile')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-        <span>Profile</span>
-    </a>
-
-    <a class="nav-item" onclick="showToast('Navigated to Orders')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="4" width="14" height="16" rx="2"></rect>
-            <line x1="9" y1="8" x2="15" y2="8"></line>
-            <line x1="9" y1="12" x2="15" y2="12"></line>
-            <line x1="9" y1="16" x2="13" y2="16"></line>
-        </svg>
-        <span>Orders</span>
-    </a>
-</div>
-
-<!-- Toast Popup -->
-<div id="toast" class="toast">Copied!</div>
-
-<script>
-    // Sample Country Data Array (API response array compatible)
-    const countriesData = [
-        { name: "United States", code: "+1", flag: "us", services: 152 },
-        { name: "United Kingdom", code: "+44", flag: "gb", services: 98 },
-        { name: "India", code: "+91", flag: "in", services: 121 },
-        { name: "Indonesia", code: "+62", flag: "id", services: 87 },
-        { name: "Germany", code: "+49", flag: "de", services: 76 },
-        { name: "France", code: "+33", flag: "fr", services: 95 },
-        { name: "Canada", code: "+1", flag: "ca", services: 54 },
-        { name: "Brazil", code: "+55", flag: "br", services: 63 },
-        { name: "Pakistan", code: "+92", flag: "pk", services: 48 },
-        { name: "Bangladesh", code: "+880", flag: "bd", services: 46 }
-    ];
-
-    let selectedCountryCode = null;
-
-    // Render Country List
-    function renderCountries(data) {
-        const container = document.getElementById("country-list-container");
-        container.innerHTML = "";
-
-        data.forEach(item => {
-            const el = document.createElement("div");
-            el.className = `country-item ${selectedCountryCode === item.code ? 'selected' : ''}`;
-            el.onclick = () => selectCountry(item, el);
-
-            el.innerHTML = `
-                <div class="country-left">
-                    <div class="flag-box">
-                        <span class="fi fi-${item.flag}"></span>
-                    </div>
-                    <div>
-                        <span class="country-name">${item.name}</span>
-                        <span class="country-code">${item.code}</span>
-                    </div>
-                </div>
-                <div class="country-right">
-                    <span class="services-badge">${item.services} Services</span>
-                    <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>
-            `;
-            container.appendChild(el);
-        });
-    }
-
-    // Page View Navigation
-    function showSelectCountry() {
-        document.getElementById("view-dashboard").classList.remove("active");
-        document.getElementById("view-select-country").classList.add("active");
-        renderCountries(countriesData);
-    }
-
-    function showDashboard() {
-        document.getElementById("view-select-country").classList.remove("active");
-        document.getElementById("view-dashboard").classList.add("active");
-    }
-
-    // Country Filter Functionality
-    function filterCountries() {
-        const query = document.getElementById("country-search").value.toLowerCase();
-        const filtered = countriesData.filter(c => 
-            c.name.toLowerCase().includes(query) || c.code.includes(query)
-        );
-        renderCountries(filtered);
-    }
-
-    // Select Country Action
-    function selectCountry(countryObj, element) {
-        document.querySelectorAll(".country-item").forEach(item => item.classList.remove("selected"));
-        element.classList.add("selected");
-        selectedCountryCode = countryObj.code;
-        showToast(`Selected: ${countryObj.name}`);
-    }
-
-    function proceedNextStep() {
-        if (!selectedCountryCode) {
-            showToast("Please select a country first");
-            return;
-        }
-        showToast("Proceeding to Services...");
-    }
-
-    function toggleSort() {
-        showToast("Sorting updated!");
-    }
-
-    // Copy Toast Helper
-    function copyToClipboard(text, msg) {
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(() => showToast(msg));
+    // 2. Real-time Search functionality
+    searchInput.addEventListener('input', (e) => {
+      const filter = e.target.value.toLowerCase();
+      countryItems.forEach(item => {
+        const name = item.getAttribute('data-name').toLowerCase();
+        if (name.includes(filter)) {
+          item.style.display = 'flex';
         } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            showToast(msg);
+          item.style.display = 'none';
         }
-    }
+      });
+    });
 
-    function showToast(msg) {
-        const toast = document.getElementById("toast");
-        toast.innerText = msg;
-        toast.style.display = "block";
-        setTimeout(() => { toast.style.display = "none"; }, 2000);
-    }
-</script>
-
+    // 3. Selection visual highlight
+    countryItems.forEach(item => {
+      item.addEventListener('click', () => {
+        countryItems.forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+      });
+    });
+  </script>
 </body>
 </html>
