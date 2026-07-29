@@ -43,7 +43,8 @@
             background-color: #fff;
         }
         select:disabled { background-color: #f2f2f2; cursor: not-allowed; }
-        button {
+        
+        .btn-primary {
             background-color: #007bff;
             color: white;
             border: none;
@@ -53,8 +54,9 @@
             font-size: 16px;
             transition: 0.2s;
         }
-        button:hover { background-color: #0056b3; }
-        button:disabled { background-color: #a0cfff; cursor: not-allowed; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-primary:disabled { background-color: #a0cfff; cursor: not-allowed; }
+
         .order-box {
             background: #fff9e6;
             border: 1px solid #ffe58f;
@@ -63,7 +65,7 @@
             margin-top: 20px;
         }
         .sms-code {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #28a745;
             text-align: center;
@@ -82,6 +84,36 @@
             font-size: 11px;
             margin-left: 5px;
         }
+
+        /* Action Buttons Grid */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+            flex: 1;
+        }
+        .btn-cancel:hover { background-color: #bd2130; }
+
+        .btn-change {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+            flex: 1;
+        }
+        .btn-change:hover { background-color: #117a8b; }
     </style>
 </head>
 <body>
@@ -117,7 +149,7 @@
         </select>
     </div>
 
-    <button id="buy-btn" onclick="buyNumber()" disabled>Buy Virtual Number</button>
+    <button id="buy-btn" class="btn-primary" onclick="buyNumber()" disabled>Buy Virtual Number</button>
 
     <!-- Order Details -->
     <div id="order-section" class="order-box" style="display: none;">
@@ -127,25 +159,29 @@
         <p style="margin:5px 0;"><strong>Status:</strong> <span id="order-status" class="badge">WAITING</span></p>
 
         <hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">
-        <div id="sms-container" class="loader">Waiting for SMS...</div>
+        <div id="sms-container" class="loader">Waiting for SMS code...</div>
+
+        <!-- Action Buttons (Cancel & Change) -->
+        <div class="action-buttons" id="action-buttons">
+            <button class="btn-cancel" id="btn-cancel-id" onclick="cancelNumber()">Cancel Order</button>
+            <button class="btn-change" id="btn-change-id" onclick="changeNumber()">Change Number</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // 🔗 আপনার Ngrok Backend URL
     const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev";
-
     const headers = { "ngrok-skip-browser-warning": "69420" };
+
     let servicesData = [];
+    let currentOrderId = null;
     let pollingInterval = null;
 
-    // 1. Initialize Page Data
     async function init() {
         fetchBalance();
         fetchCountries();
     }
 
-    // Fetch Balance
     async function fetchBalance() {
         try {
             const res = await fetch(`${BACKEND_URL}/api/profile`, { headers });
@@ -156,7 +192,6 @@
         }
     }
 
-    // Fetch Countries Dropdown
     async function fetchCountries() {
         const countrySelect = document.getElementById("country-select");
         try {
@@ -164,8 +199,6 @@
             const countries = await res.json();
             
             countrySelect.innerHTML = '<option value="">-- Choose a Country --</option>';
-            
-            // Sort countries alphabetically
             const sortedKeys = Object.keys(countries).sort();
             
             sortedKeys.forEach(key => {
@@ -180,7 +213,6 @@
         }
     }
 
-    // When Country Selected -> Load Services
     async function onCountryChange() {
         const country = document.getElementById("country-select").value;
         const serviceSelect = document.getElementById("service-select");
@@ -219,7 +251,6 @@
         }
     }
 
-    // When Service Selected -> Load Operators
     function onServiceChange() {
         const selectedService = document.getElementById("service-select").value;
         const operatorSelect = document.getElementById("operator-select");
@@ -247,13 +278,13 @@
         buyBtn.disabled = false;
     }
 
-    // Buy Number
     async function buyNumber() {
         const country = document.getElementById("country-select").value;
         const service = document.getElementById("service-select").value;
         const operator = document.getElementById("operator-select").value || "any";
 
         document.getElementById("order-section").style.display = "block";
+        document.getElementById("action-buttons").style.display = "flex";
         document.getElementById("phone-number").innerText = "Purchasing...";
         document.getElementById("order-id").innerText = "-";
         document.getElementById("order-status").innerText = "PROCESSING";
@@ -267,13 +298,13 @@
             const data = await res.json();
 
             if (data.id && data.phone) {
+                currentOrderId = data.id;
                 document.getElementById("phone-number").innerText = data.phone;
                 document.getElementById("order-id").innerText = data.id;
                 document.getElementById("order-status").innerText = data.status || "WAITING";
 
-                fetchBalance(); // Refresh balance
+                fetchBalance();
 
-                // Auto Check SMS
                 pollingInterval = setInterval(() => checkSMS(data.id), 4000);
             } else {
                 alert("Purchase failed: " + (data.error || "No stock or low balance"));
@@ -285,7 +316,6 @@
         }
     }
 
-    // Check SMS Status
     async function checkSMS(orderId) {
         try {
             const res = await fetch(`${BACKEND_URL}/api/check/${orderId}`, { headers });
@@ -298,12 +328,57 @@
                 const smsBox = document.getElementById("sms-container");
                 smsBox.className = "sms-code";
                 smsBox.innerText = `${latestSMS.code}`;
+                
+                // SMS চলে আসলে ক্যানসেল বাটন হাইড করে দেওয়া ভালো
+                document.getElementById("action-buttons").style.display = "none";
                 clearInterval(pollingInterval);
             } else if (data.status === "FINISHED" || data.status === "CANCELED") {
+                document.getElementById("action-buttons").style.display = "none";
                 clearInterval(pollingInterval);
             }
         } catch (e) {
             console.error(e);
+        }
+    }
+
+    // 🔴 Cancel Current Order
+    async function cancelNumber() {
+        if (!currentOrderId) return;
+        
+        if (!confirm("Are you sure you want to cancel this order?")) return;
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
+            const data = await res.json();
+
+            if (data.status === "CANCELED" || data.id) {
+                alert("Order canceled successfully!");
+                if (pollingInterval) clearInterval(pollingInterval);
+                document.getElementById("order-section").style.display = "none";
+                fetchBalance();
+            } else {
+                alert("Cannot cancel order: " + (data.error || "Time limit exceeded or already used"));
+            }
+        } catch (e) {
+            alert("Failed to cancel order.");
+        }
+    }
+
+    // 🔄 Change Number (Cancel + Re-buy)
+    async function changeNumber() {
+        if (!currentOrderId) return;
+
+        if (!confirm("Cancel this number and request a new one?")) return;
+
+        try {
+            // First cancel existing number
+            await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            // Re-buy new number
+            await buyNumber();
+        } catch (e) {
+            alert("Error while changing number.");
         }
     }
 
