@@ -19,6 +19,7 @@
             padding: 20px;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
         }
         h2 { text-align: center; color: #007bff; margin-top: 0; font-size: 22px; }
         .card {
@@ -64,18 +65,62 @@
             border-radius: 10px;
             margin-top: 20px;
         }
+
+        /* Copyable Elements */
+        .copyable-phone {
+            font-size: 17px;
+            color: #007bff;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #eef5ff;
+            display: inline-block;
+            user-select: all;
+        }
+        .copyable-phone:hover {
+            background: #d0e3ff;
+        }
+
+        /* Multiple SMS Container */
+        .sms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .sms-card {
+            background: #e6f4ea;
+            border: 1px solid #b7eb8f;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
         .sms-code {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             color: #28a745;
-            text-align: center;
-            letter-spacing: 4px;
-            margin-top: 10px;
-            background: #e6f4ea;
-            padding: 12px;
-            border-radius: 8px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            user-select: all;
+            display: inline-block;
+            padding: 4px 12px;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px dashed #28a745;
+            margin-bottom: 5px;
         }
-        .loader { text-align: center; font-style: italic; color: #666; font-size: 13px; }
+        .sms-code:hover {
+            background: #f0fff4;
+        }
+        .sms-text {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+            word-break: break-word;
+        }
+
+        .loader { text-align: center; font-style: italic; color: #666; font-size: 13px; padding: 10px; }
         .badge {
             background: #007bff;
             color: white;
@@ -85,7 +130,7 @@
             margin-left: 5px;
         }
 
-        /* Action Buttons Grid */
+        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -97,25 +142,11 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
-            padding: 11px;
+            padding: 10px;
             border-radius: 8px;
             flex: 1;
-            font-size: 14px;
         }
         .btn-cancel:hover { background-color: #bd2130; }
-
-        .btn-finish {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 11px;
-            border-radius: 8px;
-            flex: 1;
-            font-size: 14px;
-        }
-        .btn-finish:hover { background-color: #218838; }
 
         .btn-change {
             background-color: #17a2b8;
@@ -123,12 +154,26 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
-            padding: 11px;
+            padding: 10px;
             border-radius: 8px;
             flex: 1;
-            font-size: 14px;
         }
         .btn-change:hover { background-color: #117a8b; }
+
+        /* Toast Popup Notice */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -169,20 +214,31 @@
     <!-- Order Details -->
     <div id="order-section" class="order-box" style="display: none;">
         <h3 style="margin-top:0; font-size:16px;">Active Order</h3>
-        <p style="margin:5px 0;"><strong>Phone:</strong> <span id="phone-number" style="font-size:16px; color:#007bff;">-</span></p>
+        <p style="margin:5px 0;">
+            <strong>Phone:</strong> 
+            <span id="phone-number" class="copyable-phone" onclick="copyToClipboard(this.innerText, 'Phone number copied!')">-</span>
+            <small style="color: #888; font-size: 11px;">(click to copy)</small>
+        </p>
         <p style="margin:5px 0;"><strong>Order ID:</strong> <span id="order-id">-</span></p>
         <p style="margin:5px 0;"><strong>Status:</strong> <span id="order-status" class="badge">WAITING</span></p>
 
         <hr style="border:0; border-top:1px dashed #ccc; margin:10px 0;">
-        <div id="sms-container" class="loader">Waiting for SMS code...</div>
+        
+        <!-- All SMS Codes will be listed here -->
+        <div id="sms-container">
+            <div class="loader">Waiting for SMS code...</div>
+        </div>
 
         <!-- Action Buttons -->
         <div class="action-buttons" id="action-buttons">
-            <button class="btn-cancel" id="btn-left" onclick="handleLeftButton()">Cancel Order</button>
-            <button class="btn-change" id="btn-right" onclick="changeNumber()">Change Number</button>
+            <button class="btn-cancel" id="btn-cancel-id" onclick="cancelNumber()">Cancel Order</button>
+            <button class="btn-change" id="btn-change-id" onclick="changeNumber()">Change Number</button>
         </div>
     </div>
 </div>
+
+<!-- Copy Toast Notification -->
+<div id="toast" class="toast">Copied!</div>
 
 <script>
     const BACKEND_URL = "https://underuse-fading-math.ngrok-free.dev";
@@ -191,17 +247,21 @@
     let servicesData = [];
     let currentOrderId = null;
     let pollingInterval = null;
-    let isSmsReceived = false;
+    let rawPhoneNumber = "";
 
     const serviceIcons = {
         'telegram': '✈️', 'whatsapp': '💬', 'steam': '🎮', 'google': '🔍',
         'youtube': '▶️', 'facebook': '📘', 'instagram': '📷', 'twitter': '🐦',
-        'tiktok': '🎵', 'discord': '👾', 'openai': '🤖', 'chatgpt': '🤖'
+        'x': '🐦', 'tiktok': '🎵', 'discord': '👾', 'openai': '🤖',
+        'chatgpt': '🤖', 'netflix': '🎬', 'amazon': '🛒', 'apple': '🍏'
     };
 
     function getCountryFlag(countryCode) {
         if (!countryCode || countryCode.length !== 2) return '🌐';
-        const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt());
+        const codePoints = countryCode
+            .toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt());
         return String.fromCodePoint(...codePoints);
     }
 
@@ -211,6 +271,36 @@
             if (name.includes(key)) return serviceIcons[key];
         }
         return '📱';
+    }
+
+    // Helper: Copy to Clipboard Function
+    function copyToClipboard(text, message = "Copied to clipboard!") {
+        if (!text || text === "-") return;
+        
+        // Clean up text if it has extra spacing
+        const cleanText = text.trim();
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(cleanText).then(() => showToast(message));
+        } else {
+            // Fallback for non-https/older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = cleanText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast(message);
+        }
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.innerText = msg;
+        toast.style.display = "block";
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 2000);
     }
 
     async function init() {
@@ -321,15 +411,13 @@
         const service = document.getElementById("service-select").value;
         const operator = document.getElementById("operator-select").value || "any";
 
-        isSmsReceived = false;
-        resetLeftButtonToCancel();
-
         document.getElementById("order-section").style.display = "block";
+        document.getElementById("action-buttons").style.display = "flex";
         document.getElementById("phone-number").innerText = "Purchasing...";
         document.getElementById("order-id").innerText = "-";
         document.getElementById("order-status").innerText = "PROCESSING";
-        document.getElementById("sms-container").className = "loader";
-        document.getElementById("sms-container").innerText = "Waiting for SMS code...";
+        
+        document.getElementById("sms-container").innerHTML = '<div class="loader">Waiting for SMS code...</div>';
 
         if (pollingInterval) clearInterval(pollingInterval);
 
@@ -339,13 +427,15 @@
 
             if (data.id && data.phone) {
                 currentOrderId = data.id;
+                rawPhoneNumber = data.phone;
                 document.getElementById("phone-number").innerText = data.phone;
                 document.getElementById("order-id").innerText = data.id;
                 document.getElementById("order-status").innerText = data.status || "WAITING";
 
                 fetchBalance();
 
-                pollingInterval = setInterval(() => checkSMS(data.id), 4000);
+                // Start polling every 3 seconds
+                pollingInterval = setInterval(() => checkSMS(data.id), 3000);
             } else {
                 document.getElementById("order-section").style.display = "none";
             }
@@ -354,6 +444,7 @@
         }
     }
 
+    // Checking for All SMS Codes (Support Multiple SMS)
     async function checkSMS(orderId) {
         try {
             const res = await fetch(`${BACKEND_URL}/api/check/${orderId}`, { headers });
@@ -362,18 +453,33 @@
             document.getElementById("order-status").innerText = data.status || "WAITING";
 
             if (data.sms && data.sms.length > 0) {
-                const latestSMS = data.sms[data.sms.length - 1];
-                const smsBox = document.getElementById("sms-container");
-                smsBox.className = "sms-code";
-                smsBox.innerText = `${latestSMS.code}`;
-                
-                // OTP আসার পর বাটন চেঞ্জ হয়ে Finish Order হবে
-                if (!isSmsReceived) {
-                    isSmsReceived = true;
-                    setLeftButtonToFinish();
-                }
-                clearInterval(pollingInterval);
-            } else if (data.status === "FINISHED" || data.status === "CANCELED") {
+                const container = document.getElementById("sms-container");
+                let listHtml = '<div class="sms-list">';
+
+                // Reverse loop so newest SMS appears at the top
+                const reversedSMS = [...data.sms].reverse();
+
+                reversedSMS.forEach((smsItem, index) => {
+                    const code = smsItem.code || smsItem.code_from_sms || "NO CODE";
+                    const text = smsItem.text || smsItem.sender || "";
+
+                    listHtml += `
+                        <div class="sms-card">
+                            <small style="color:#666; font-size:11px;">SMS #${data.sms.length - index}</small><br>
+                            <div class="sms-code" onclick="copyToClipboard('${code}', 'OTP Code copied!')">
+                                ${code}
+                            </div>
+                            <br><small style="color:#888; font-size:11px;">(click code to copy)</small>
+                            ${text ? `<div class="sms-text">${text}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                listHtml += '</div>';
+                container.innerHTML = listHtml;
+            }
+
+            if (data.status === "FINISHED" || data.status === "CANCELED" || data.status === "TIMEOUT") {
                 clearInterval(pollingInterval);
             }
         } catch (e) {
@@ -381,32 +487,13 @@
         }
     }
 
-    function resetLeftButtonToCancel() {
-        const btn = document.getElementById("btn-left");
-        btn.innerText = "Cancel Order";
-        btn.className = "btn-cancel";
-    }
-
-    function setLeftButtonToFinish() {
-        const btn = document.getElementById("btn-left");
-        btn.innerText = "Finish Order";
-        btn.className = "btn-finish";
-    }
-
-    function handleLeftButton() {
-        if (isSmsReceived) {
-            finishNumber();
-        } else {
-            cancelNumber();
-        }
-    }
-
-    // Cancel Order
     async function cancelNumber() {
         if (!currentOrderId) return;
+
         try {
             const res = await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             const data = await res.json();
+
             if (data.status === "CANCELED" || data.id) {
                 if (pollingInterval) clearInterval(pollingInterval);
                 document.getElementById("order-section").style.display = "none";
@@ -417,29 +504,13 @@
         }
     }
 
-    // Finish Order
-    async function finishNumber() {
-        if (!currentOrderId) return;
-        try {
-            await fetch(`${BACKEND_URL}/api/finish/${currentOrderId}`, { headers });
-            if (pollingInterval) clearInterval(pollingInterval);
-            document.getElementById("order-section").style.display = "none";
-            fetchBalance();
-        } catch (e) {
-            console.error("Finish failed", e);
-        }
-    }
-
-    // Change Number (Cancel/Finish + Re-buy)
     async function changeNumber() {
         if (!currentOrderId) return;
+
         try {
-            if (isSmsReceived) {
-                await fetch(`${BACKEND_URL}/api/finish/${currentOrderId}`, { headers });
-            } else {
-                await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
-            }
+            await fetch(`${BACKEND_URL}/api/cancel/${currentOrderId}`, { headers });
             if (pollingInterval) clearInterval(pollingInterval);
+
             await buyNumber();
         } catch (e) {
             console.error("Change failed", e);
